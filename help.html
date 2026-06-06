@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hilfe – ADS-B Radar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --border: #1e2d40;
+      --accent: #00d4ff;
+      --accent-dim: rgba(0, 212, 255, 0.12);
+      --text: #c9d6e3;
+      --text-dim: #5a7a9a;
+      --heading: #e8f4ff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    .logo span { color: var(--text-dim); }
+
+    header nav { margin-left: auto; }
+
+    header nav a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.2s;
+    }
+
+    header nav a:hover { color: var(--accent); }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    .page-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--heading);
+      margin-bottom: 3rem;
+      line-height: 1.2;
+    }
+
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0.5;
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      opacity: 0.8;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--heading);
+      margin-bottom: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    h2:first-of-type { margin-top: 0; }
+
+    p {
+      color: var(--text);
+      margin-bottom: 0.8rem;
+      font-size: 0.95rem;
+    }
+
+    p:last-child { margin-bottom: 0; }
+
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+    }
+
+    .step-list li {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    .step-list li:last-child { border-bottom: none; }
+
+    .step-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 3px;
+      padding: 2px 7px;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    .example-box {
+      background: rgba(0,212,255,0.04);
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.8;
+      margin: 0.8rem 0;
+    }
+
+    .example-box .label {
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .tag {
+      display: inline-block;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,212,255,0.2);
+      color: var(--accent);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+      margin: 0.15rem;
+    }
+
+    .tag-green {
+      background: rgba(0,255,136,0.08);
+      border-color: rgba(0,255,136,0.2);
+      color: #3f9;
+    }
+
+    .info-box {
+      background: rgba(0,212,255,0.06);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      padding: 0.8rem 1rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    .warn-box {
+      background: rgba(255,136,0,0.06);
+      border-left: 3px solid #f80;
+      border-radius: 0 6px 6px 0;
+      padding: 0.8rem 1rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      color: #c9a070;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .cta-btn {
+      display: inline-block;
+      background: #0d2a1a;
+      border: 1px solid #2a6a3a;
+      color: #3f9;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.82rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-top: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .cta-btn:hover { background: #0f3a22; text-decoration: none; }
+
+    .footer-note {
+      margin-top: 3rem;
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 1rem; }
+      main { padding: 2rem 1rem 4rem; }
+      h1 { font-size: 1.5rem; margin-bottom: 2rem; }
+      .section { padding: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">ADS-B <span>//</span> RADAR</a>
+  <nav><a href="index.html">← Zurück zur App</a></nav>
+</header>
+
+<main>
+  <div class="page-title">// hilfe</div>
+  <h1>Favoriten &amp;<br>Benachrichtigungen</h1>
+
+  <!-- WAS SIND FAVORITEN -->
+  <div class="section">
+    <div class="section-label">01 — Was sind Favoriten?</div>
+
+    <p>Mit Favoriten kannst du bestimmte Flüge oder Airlines im Blick behalten. Sobald ein Favorit in deine Alert-Zone fliegt, bekommst du eine Nachricht über Telegram.</p>
+
+    <h2>Callsign oder Prefix?</h2>
+    <p>Du kannst entweder einen vollständigen Callsign oder nur einen Prefix (die ersten 2–3 Buchstaben) als Favorit speichern.</p>
+
+    <div class="example-box">
+      <span class="label">Beispiele</span>
+      <span class="tag">LH</span> Alle Lufthansa-Flüge (LH400, LH123, …)<br>
+      <span class="tag">LH400</span> Nur dieser eine Flug<br>
+      <span class="tag">EZY</span> Alle easyJet-Flüge<br>
+      <span class="tag">RYR</span> Alle Ryanair-Flüge<br>
+      <span class="tag">DLH</span> Lufthansa (ICAO-Code)
+    </div>
+
+    <div class="info-box">
+      Tipp: Klicke in der App auf ein Flugzeug — der Callsign wird im Detail-Panel angezeigt und kann direkt als Favorit gespeichert werden.
+    </div>
+  </div>
+
+  <!-- TELEGRAM EINRICHTEN -->
+  <div class="section">
+    <div class="section-label">02 — Telegram einrichten</div>
+
+    <p>Benachrichtigungen werden über Telegram verschickt — eine kostenlose Messenger-App. Du brauchst keinen Account bei ADS-B Radar.</p>
+
+    <h2>Schritt für Schritt</h2>
+    <ul class="step-list">
+      <li>
+        <span class="step-num">01</span>
+        <span>Installiere <a href="https://telegram.org" target="_blank">Telegram</a> auf deinem Smartphone oder öffne <a href="https://web.telegram.org" target="_blank">web.telegram.org</a> im Browser.</span>
+      </li>
+      <li>
+        <span class="step-num">02</span>
+        <span>Suche nach <a href="https://t.me/adsb_radar_bot" target="_blank"><strong>@adsb_radar_bot</strong></a> und öffne den Chat.</span>
+      </li>
+      <li>
+        <span class="step-num">03</span>
+        <span>Sende <strong>/start</strong> — der Bot antwortet sofort mit deiner persönlichen Chat-ID.</span>
+      </li>
+      <li>
+        <span class="step-num">04</span>
+        <span>Öffne in der App das ⭐ FAVORITEN Panel und trage die Chat-ID in das entsprechende Feld ein.</span>
+      </li>
+      <li>
+        <span class="step-num">05</span>
+        <span>Füge mindestens einen Favoriten hinzu und tippe auf <strong>Speichern &amp; Aktivieren</strong>.</span>
+      </li>
+    </ul>
+
+    <a href="https://t.me/adsb_radar_bot" target="_blank" class="cta-btn">✈ @adsb_radar_bot öffnen</a>
+  </div>
+
+  <!-- WANN BEKOMME ICH NACHRICHTEN -->
+  <div class="section">
+    <div class="section-label">03 — Wann kommen Benachrichtigungen?</div>
+
+    <h2>Alert-Zone</h2>
+    <p>Du wirst benachrichtigt wenn ein Favorit in die konfigurierte Alert-Zone fliegt. Den Radius kannst du oben in der App einstellen (Standard: 15 nm).</p>
+
+    <div class="example-box">
+      <span class="label">Aktive Zeiten</span>
+      08:00 – 23:59 Uhr <strong>deiner lokalen Zeit</strong><br>
+      <span style="color:var(--text-dim);font-size:0.8rem;">Nachts keine Benachrichtigungen – egal wo du dich befindest</span>
+    </div>
+
+    <h2>Cooldown</h2>
+    <p>Pro Callsign wird maximal alle 5 Minuten eine Benachrichtigung verschickt — auch wenn das Flugzeug mehrfach in der Alert-Zone erkannt wird.</p>
+
+    <h2>App muss nicht offen sein</h2>
+    <p>Der Server prüft alle 5 Minuten automatisch ob ein Favorit in deiner Zone ist. Die App muss dafür nicht geöffnet sein — es reicht, sie einmal mit aktiver Chat-ID geöffnet zu haben.</p>
+
+    <div class="warn-box">
+      ⚠ Wenn du deinen Standort wechselst (z.B. auf Reisen), öffne die App kurz und tippe erneut auf Speichern &amp; Aktivieren, damit der Server deinen neuen Standort kennt.
+    </div>
+  </div>
+
+  <!-- TÄGLICHE ZUSAMMENFASSUNG -->
+  <div class="section">
+    <div class="section-label">04 — Tägliche Zusammenfassung</div>
+
+    <p>Jeden Morgen um <strong>07:55 Uhr</strong> schickt der Bot eine Zusammenfassung der letzten 24 Stunden — alle Favoriten die in deiner Zone waren, mit Uhrzeit und Richtung.</p>
+
+    <h2>Bot-Befehle</h2>
+    <div class="example-box">
+      <span class="label">Verfügbare Befehle im Telegram-Chat</span>
+      <strong>/start</strong> — Chat-ID anzeigen<br>
+      <strong>/stats</strong> — Häufigste Besucher in deiner Alert-Zone heute
+    </div>
+  </div>
+
+  <!-- DATEN LÖSCHEN -->
+  <div class="section">
+    <div class="section-label">05 — Daten löschen</div>
+
+    <p>Du kannst deine gespeicherten Daten jederzeit löschen. Öffne dazu das ⭐ FAVORITEN Panel in der App und tippe auf:</p>
+
+    <div class="example-box">
+      🗑 Meine Daten löschen (DSGVO)
+    </div>
+
+    <p>Damit werden Standort, Chat-ID, Favoriten und Benachrichtigungshistorie vom Server entfernt. Lokale Daten im Browser kannst du über die Browser-Einstellungen löschen.</p>
+
+    <p>Bei weiteren Fragen: <a href="mailto:kontakt@adsb-radar.de">kontakt@adsb-radar.de</a> · <a href="legal.html">Datenschutzerklärung</a></p>
+  </div>
+
+  <div class="footer-note">adsb-radar.de &nbsp;·&nbsp; <a href="legal.html" style="color:inherit">Impressum & Datenschutz</a></div>
+</main>
+
+</body>
+</html>

@@ -390,6 +390,52 @@ body {
     grid-template-columns: 62px 52px 48px 40px 34px 30px;
   }
 }
+
+/* ── Favoriten-Panel ─────────────────────────────── */
+#fav-toggle {
+  position: fixed; bottom: 48px; right: 14px; z-index: 200;
+  background: #0d1f3a; border: 1px solid #1e3a5a; color: #4af;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;
+  padding: 6px 12px; border-radius: 4px; cursor: pointer;
+  letter-spacing: 0.08em;
+}
+#fav-toggle:hover { background: #112a4a; }
+
+#fav-panel {
+  position: fixed; bottom: 80px; right: 14px; z-index: 199;
+  width: 300px; max-height: 70vh; overflow-y: auto;
+  background: #0a0e1a; border: 1px solid #1e3a5a;
+  border-radius: 8px; padding: 14px; display: none;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.78rem;
+}
+#fav-panel.visible { display: block; }
+#fav-panel h3 { color: #4af; margin: 0 0 10px; font-size: 0.82rem; letter-spacing: 0.1em; }
+#fav-panel label { color: #7a9abb; font-size: 0.72rem; display: block; margin-bottom: 3px; }
+#fav-panel input[type=text] {
+  width: 100%; background: #111827; border: 1px solid #1e3a5a;
+  color: #c9d6e3; padding: 5px 8px; border-radius: 4px;
+  font-family: inherit; font-size: 0.78rem; margin-bottom: 8px; box-sizing: border-box;
+}
+#fav-panel input[type=text]:focus { outline: none; border-color: #4af; }
+.fav-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #0d1f3a; border: 1px solid #1e3a5a; color: #c9d6e3;
+  padding: 2px 8px; border-radius: 3px; margin: 2px; font-size: 0.72rem;
+}
+.fav-tag button { background: none; border: none; color: #f66; cursor: pointer; font-size: 0.8rem; padding: 0; line-height: 1; }
+#fav-tags { margin-bottom: 10px; min-height: 24px; }
+.fav-sep { border: none; border-top: 1px solid #1e3a5a; margin: 10px 0; }
+#fav-chat-hint {
+  color: #5a7a9a; font-size: 0.68rem; line-height: 1.5; margin-bottom: 8px;
+}
+#fav-chat-hint a { color: #4af; text-decoration: none; }
+#fav-save-btn {
+  width: 100%; padding: 6px; background: #0d2a1a; border: 1px solid #2a6a3a;
+  color: #3f9; border-radius: 4px; cursor: pointer; font-family: inherit;
+  font-size: 0.75rem; letter-spacing: 0.08em;
+}
+#fav-save-btn:hover { background: #0f3a22; }
+#fav-status { color: #3f9; font-size: 0.68rem; margin-top: 6px; min-height: 16px; }
 </style>
 </head>
 <body>
@@ -464,6 +510,31 @@ body {
     </div>
   </div>
   </div>
+</div>
+
+
+<button id="fav-toggle" onclick="toggleFavPanel()">⭐ FAVORITEN</button>
+
+<div id="fav-panel">
+  <h3>⭐ FAVORITEN &nbsp;<a href="help.html" target="_blank" style="font-size:0.7rem;color:#5a7a9a;font-family:Outfit,sans-serif;letter-spacing:0;font-weight:300;">ℹ Wie funktioniert das?</a></h3>
+  <label>Callsign oder Prefix hinzufügen</label>
+  <input type="text" id="fav-input" placeholder="z.B. LH oder LH400" maxlength="10"
+    onkeydown="if(event.key==='Enter') addFav()">
+  <button onclick="addFav()" style="width:100%;padding:5px;background:#0d1f3a;border:1px solid #1e3a5a;color:#4af;border-radius:4px;cursor:pointer;font-family:inherit;font-size:0.75rem;margin-bottom:8px;">+ Hinzufügen</button>
+  <div id="fav-tags"></div>
+  <hr class="fav-sep">
+  <label>Telegram Chat-ID</label>
+  <div id="fav-chat-hint">
+    1. Schreibe <a href="https://t.me/adsb_radar_bot" target="_blank">@adsb_radar_bot</a> in Telegram<br>
+    2. Sende <b>/start</b> – der Bot antwortet mit deiner Chat-ID<br>
+    3. Trage sie hier ein
+  </div>
+  <input type="text" id="fav-chatid" placeholder="z.B. 123456789" maxlength="20">
+  <button id="fav-save-btn" onclick="saveFavs()">💾 Speichern &amp; Aktivieren</button>
+  <div id="fav-status"></div>
+  <hr class="fav-sep">
+  <button onclick="deleteFavData()" style="width:100%;padding:5px;background:#1a0a0a;border:1px solid #5a1a1a;color:#f66;border-radius:4px;cursor:pointer;font-family:inherit;font-size:0.72rem;margin-top:4px;">🗑 Meine Daten löschen (DSGVO)</button>
+  <p style="color:#3a4a5a;font-size:0.65rem;margin-top:5px;line-height:1.4;">Löscht Standort, Chat-ID und Favoriten vom Server. Lokale Daten bleiben im Browser erhalten.</p>
 </div>
 
 <div id="toast-container"></div>
@@ -1142,6 +1213,141 @@ function autoSetRadius() {
   if (input && parseInt(input.value) !== target) input.value = target;
 }
 
+
+// ══════════════════════════════════════════════
+// FAVORITEN
+// ══════════════════════════════════════════════
+const PUSH_SERVER = 'https://web-production-a6fc8.up.railway.app';
+
+let favorites = JSON.parse(localStorage.getItem('fav_callsigns') || '[]');
+let favChatId = localStorage.getItem('fav_chat_id') || '';
+
+function toggleFavPanel() {
+  const panel = document.getElementById('fav-panel');
+  panel.classList.toggle('visible');
+  if (panel.classList.contains('visible')) {
+    renderFavTags();
+    document.getElementById('fav-chatid').value = favChatId;
+  }
+}
+
+function renderFavTags() {
+  const container = document.getElementById('fav-tags');
+  container.innerHTML = '';
+  favorites.forEach(cs => {
+    const tag = document.createElement('span');
+    tag.className = 'fav-tag';
+    tag.innerHTML = `${cs} <button onclick="removeFav('${cs}')">✕</button>`;
+    container.appendChild(tag);
+  });
+}
+
+function addFav() {
+  const input = document.getElementById('fav-input');
+  const val = input.value.trim().toUpperCase();
+  if (!val || val.length < 2) return;
+  if (!favorites.includes(val)) {
+    favorites.push(val);
+    localStorage.setItem('fav_callsigns', JSON.stringify(favorites));
+  }
+  input.value = '';
+  renderFavTags();
+}
+
+function removeFav(cs) {
+  favorites = favorites.filter(f => f !== cs);
+  localStorage.setItem('fav_callsigns', JSON.stringify(favorites));
+  renderFavTags();
+}
+
+async function saveFavs() {
+  const chatId = document.getElementById('fav-chatid').value.trim();
+  const status = document.getElementById('fav-status');
+  if (!chatId) { status.textContent = '⚠ Bitte Chat-ID eingeben'; status.style.color = '#f80'; return; }
+  if (!myLat) { status.textContent = '⚠ Kein GPS-Standort verfügbar'; status.style.color = '#f80'; return; }
+
+  favChatId = chatId;
+  localStorage.setItem('fav_chat_id', chatId);
+
+  status.textContent = '⏳ Wird gespeichert…';
+  status.style.color = '#4af';
+
+  try {
+    const radius    = parseInt(document.getElementById('radius-input').value) || 25;
+    const alertRad  = parseInt(document.getElementById('alert-input').value) || 15;
+    const resp = await fetch(`${PUSH_SERVER}/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id:      chatId,
+        lat:          myLat,
+        lon:          myLon,
+        radius:       radius,
+        alert_radius: alertRad,
+        favorites:    favorites,
+        timezone:     Intl.DateTimeFormat().resolvedOptions().timeZone
+      })
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      status.textContent = '✅ Aktiviert! Du wirst per Telegram benachrichtigt.';
+      status.style.color = '#3f9';
+    } else {
+      throw new Error('Server error');
+    }
+  } catch(e) {
+    status.textContent = '❌ Fehler beim Speichern. Versuche es erneut.';
+    status.style.color = '#f66';
+  }
+}
+
+async function deleteFavData() {
+  const chatId = favChatId || document.getElementById('fav-chatid').value.trim();
+  const status = document.getElementById('fav-status');
+  if (!chatId) { status.textContent = '⚠ Keine Chat-ID gespeichert'; status.style.color = '#f80'; return; }
+  if (!confirm('Alle gespeicherten Daten vom Server löschen?')) return;
+  status.textContent = '⏳ Wird gelöscht…';
+  status.style.color = '#4af';
+  try {
+    const resp = await fetch(`${PUSH_SERVER}/delete`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId })
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      status.textContent = '✅ Serverdaten gelöscht.';
+      status.style.color = '#3f9';
+    } else {
+      throw new Error('Server error');
+    }
+  } catch(e) {
+    status.textContent = '❌ Fehler beim Löschen.';
+    status.style.color = '#f66';
+  }
+}
+
+async function updateServer() {
+  if (!favChatId || !myLat || !favorites.length) return;
+  try {
+    const radius   = parseInt(document.getElementById('radius-input').value) || 25;
+    const alertRad = parseInt(document.getElementById('alert-input').value) || 15;
+    await fetch(`${PUSH_SERVER}/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id:      favChatId,
+        lat:          myLat,
+        lon:          myLon,
+        radius:       radius,
+        alert_radius: alertRad,
+        favorites:    favorites,
+        timezone:     Intl.DateTimeFormat().resolvedOptions().timeZone
+      })
+    });
+  } catch(e) { console.warn('updateServer failed:', e.message); }
+}
+
 // ══════════════════════════════════════════════
 // STANDORTERMITTLUNG
 // ══════════════════════════════════════════════
@@ -1208,7 +1414,7 @@ setInterval(autoSetRadius, 60 * 1000);
 window.addEventListener('resize', resizeCanvas);
 requestAnimationFrame(() => requestAnimationFrame(resizeCanvas));
 drawRadar();
-getLocation().then(() => { if (myLat) { fetchData(); } });
+getLocation().then(() => { if (myLat) { fetchData(); updateServer(); } });
 setInterval(() => { if (myLat) fetchData(); }, REFRESH_MS);
 setInterval(refreshGpsQuiet, 5 * 60 * 1000);
 document.addEventListener('visibilitychange', () => {
