@@ -449,8 +449,8 @@ body {
     <span id="last-update">–</span>
   </div>
   <div id="controls">
-    <label>Radius: <input type="number" id="radius-input" value="25" min="10" max="500"> nm</label>
-    <label>Alert: <input type="number" id="alert-input" value="15" min="1" max="100"> nm</label>
+    <label data-i18n="radius">Radius: </label><input type="number" id="radius-input" value="25" min="10" max="500"> nm
+    <label data-i18n="alert">Alert: </label><input type="number" id="alert-input" value="15" min="1" max="100"> nm
     <button id="refresh-btn" onclick="fetchData()">⟳ Refresh</button>
   </div>
 </div>
@@ -490,7 +490,7 @@ body {
     </div>
   </div>
   <div class="dp-section">
-    <div class="dp-section-title">Flugzeug</div>
+    <div class="dp-section-title" data-i18n="aircraft">Flugzeug</div>
     <div class="dp-grid">
       <div class="dp-field"><label>Type</label><span id="dp-type">–</span></div>
       <div class="dp-field"><label>Registration</label><span id="dp-reg">–</span></div>
@@ -499,13 +499,13 @@ body {
     </div>
   </div>
   <div class="dp-section">
-    <div class="dp-section-title">Flugdaten</div>
+    <div class="dp-section-title" data-i18n="flightdata">Flugdaten</div>
     <div class="dp-grid">
       <div class="dp-field"><label>Altitude</label><span id="dp-alt">–</span></div>
       <div class="dp-field"><label>Speed</label><span id="dp-spd">–</span></div>
       <div class="dp-field"><label>Heading</label><span id="dp-hdg">–</span></div>
       <div class="dp-field"><label>Vert. Rate</label><span id="dp-vrate">–</span></div>
-      <div class="dp-field"><label>Entfernung</label><span id="dp-dist">–</span></div>
+      <div class="dp-field"><label data-i18n="distance">Entfernung</label><span id="dp-dist">–</span></div>
       <div class="dp-field"><label>Signal</label><span id="dp-rssi">–</span></div>
     </div>
   </div>
@@ -513,36 +513,36 @@ body {
 </div>
 
 
-<button id="fav-toggle" onclick="toggleFavPanel()">⭐ FAVORITEN</button>
+<button id="fav-toggle" onclick="toggleFavPanel()" data-i18n="fav_toggle">⭐ FAVORITEN</button>
 
 <div id="fav-panel">
-  <h3>⭐ FAVORITEN &nbsp;<a href="help.html" target="_blank" style="font-size:0.7rem;color:#5a7a9a;font-family:Outfit,sans-serif;letter-spacing:0;font-weight:300;">ℹ Wie funktioniert das?</a></h3>
-  <label>Callsign oder Prefix hinzufügen</label>
-  <input type="text" id="fav-input" placeholder="z.B. LH oder LH400" maxlength="10"
+  <h3>⭐ FAVORITEN &nbsp;<a href="help.html" target="_blank" style="font-size:0.7rem;color:#5a7a9a;font-family:Outfit,sans-serif;letter-spacing:0;font-weight:300;" data-i18n="fav_help_link">ℹ Wie funktioniert das?</a></h3>
+  <label data-i18n="fav_add_label">Callsign oder Prefix hinzufügen</label>
+  <input type="text" id="fav-input" placeholder="z.B. LH oder LH400" data-i18n-placeholder="fav_placeholder" maxlength="10"
     onkeydown="if(event.key==='Enter') addFav()">
-  <button onclick="addFav()" style="width:100%;padding:5px;background:#0d1f3a;border:1px solid #1e3a5a;color:#4af;border-radius:4px;cursor:pointer;font-family:inherit;font-size:0.75rem;margin-bottom:8px;">+ Hinzufügen</button>
+  <button onclick="addFav()" style="width:100%;padding:5px;background:#0d1f3a;border:1px solid #1e3a5a;color:#4af;border-radius:4px;cursor:pointer;font-family:inherit;font-size:0.75rem;margin-bottom:8px;" data-i18n="fav_add_btn">+ Hinzufügen</button>
   <div id="fav-tags"></div>
   <hr class="fav-sep">
-  <label>Telegram Chat-ID</label>
+  <label data-i18n="fav_chatid_label">Telegram Chat-ID</label>
   <div id="fav-chat-hint">
     1. Schreibe <a href="https://t.me/adsb_radar_bot" target="_blank">@adsb_radar_bot</a> in Telegram<br>
     2. Sende <b>/start</b> – der Bot antwortet mit deiner Chat-ID<br>
     3. Trage sie hier ein
   </div>
-  <input type="text" id="fav-chatid" placeholder="z.B. 123456789" maxlength="20">
-  <button id="fav-save-btn" onclick="saveFavs()">💾 Speichern &amp; Aktivieren</button>
+  <input type="text" id="fav-chatid" placeholder="z.B. 123456789" data-i18n-placeholder="fav_chatid_placeholder" maxlength="20">
+  <button id="fav-save-btn" onclick="saveFavs()" data-i18n="fav_save">💾 Speichern &amp; Aktivieren</button>
   <div id="fav-status"></div>
   <hr class="fav-sep">
-  <button onclick="deleteFavData()" style="width:100%;padding:5px;background:#1a0a0a;border:1px solid #5a1a1a;color:#f66;border-radius:4px;cursor:pointer;font-family:inherit;font-size:0.72rem;margin-top:4px;">🗑 Meine Daten löschen (DSGVO)</button>
+  <button onclick="deleteFavData()" style="width:100%;padding:5px;background:#1a0a0a;border:1px solid #5a1a1a;color:#f66;border-radius:4px;cursor:pointer;font-family:inherit;font-size:0.72rem;margin-top:4px;" data-i18n="fav_delete">🗑 Meine Daten löschen (DSGVO)</button>
   <p style="color:#3a4a5a;font-size:0.65rem;margin-top:5px;line-height:1.4;">Löscht Standort, Chat-ID und Favoriten vom Server. Lokale Daten bleiben im Browser erhalten.</p>
 </div>
 
 <div id="toast-container"></div>
 <div id="footer">
-  <span>Daten: airplanes.live · Routen: adsbdb.com · <a href="legal.html" style="color:inherit;opacity:0.7;text-decoration:none;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">Impressum & Datenschutz</a></span>
+  <span><span data-i18n="footer_data">Daten: airplanes.live · Routen: adsbdb.com</span> · <a id="legal-link" href="legal.html" style="color:inherit;opacity:0.7;text-decoration:none;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" data-i18n="footer_legal">Impressum & Datenschutz</a></span>
   <span id="footer-pos">Pos: –</span>
 </div>
-<div id="spinner">⟳ Lade…</div>
+<div id="spinner" data-i18n="loading">⟳ Lade…</div>
 
 <!-- GPS Fehlermeldung -->
 <div id="loc-modal">
@@ -1012,8 +1012,8 @@ async function fetchData() {
     drawRadar();
     lastFetchTime = Date.now();
     setApiStatus('green', `${data.total??Object.keys(aircraft).length} Flugzeuge`);
-    document.getElementById('last-update').textContent = 'Update: '+new Date().toLocaleTimeString('de-DE');
-    document.getElementById('count-txt').textContent = `${Object.keys(aircraft).length} Flugzeuge`;
+    document.getElementById('last-update').textContent = t.last_update(new Date().toLocaleTimeString(LANG==='de'?'de-DE':'en-GB'));
+    document.getElementById('count-txt').textContent = t.count(Object.keys(aircraft).length);
 
     if (selectedHex && aircraft[selectedHex]) selectAircraft(selectedHex);
 
@@ -1026,7 +1026,7 @@ async function fetchData() {
                 (e.message.includes('Failed to fetch') || e.message.includes('Load failed') || e.message.includes('NetworkError'))
                   ? 'Kein Netz / CORS' : e.message.slice(0, 30);
     setApiStatus('red', '⚠ ' + msg);
-    document.getElementById('last-update').textContent = 'Fehler: ' + msg;
+    document.getElementById('last-update').textContent = t.error(msg);
   } finally {
     isFetching = false;
     btn.disabled = false;
@@ -1088,7 +1088,7 @@ async function selectAircraft(hex) {
 
   // Header
   document.getElementById('dp-callsign').textContent = call;
-  document.getElementById('dp-airline').textContent = airline||'Unbekannte Airline';
+  document.getElementById('dp-airline').textContent = airline||t.unknown_airline;
 
   // Badges
   const badges = document.getElementById('dp-badges');
@@ -1189,7 +1189,8 @@ async function fetchTimezone(lat, lon) {
     if (d?.timezone_id) {
       myTimezone = d.timezone_id;
       // Radius sofort mit richtiger Ortszeit neu setzen
-      autoSetRadius();
+      applyI18n();
+autoSetRadius();
     }
   } catch { /* Gerätezeitzone bleibt als Fallback */ }
 }
@@ -1213,6 +1214,123 @@ function autoSetRadius() {
   if (input && parseInt(input.value) !== target) input.value = target;
 }
 
+
+
+// ══════════════════════════════════════════════
+// i18n – Mehrsprachigkeit
+// ══════════════════════════════════════════════
+const LANG = (navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en';
+
+const T = {
+  de: {
+    radius:               'Radius: ',
+    alert:                'Alert: ',
+    aircraft:             'Flugzeug',
+    flightdata:           'Flugdaten',
+    distance:             'Entfernung',
+    fav_toggle:           '⭐ FAVORITEN',
+    fav_add_label:        'Callsign oder Prefix hinzufügen',
+    fav_placeholder:      'z.B. LH oder LH400',
+    fav_add_btn:          '+ Hinzufügen',
+    fav_chatid_label:     'Telegram Chat-ID',
+    fav_chatid_placeholder: 'z.B. 123456789',
+    fav_save:             '💾 Speichern & Aktivieren',
+    fav_delete:           '🗑 Meine Daten löschen (DSGVO)',
+    fav_help_link:        'ℹ Wie funktioniert das?',
+    fav_chat_hint:        '1. Schreibe <a href="https://t.me/adsb_radar_bot" target="_blank">@adsb_radar_bot</a> in Telegram<br>2. Sende <b>/start</b> – der Bot antwortet mit deiner Chat-ID<br>3. Trage sie hier ein',
+    fav_delete_hint:      'Löscht Standort, Chat-ID und Favoriten vom Server. Lokale Daten bleiben im Browser erhalten.',
+    fav_delete_confirm:   'Alle gespeicherten Daten vom Server löschen?',
+    footer_data:          'Daten: airplanes.live · Routen: adsbdb.com',
+    footer_legal:         'Impressum & Datenschutz',
+    loading:              '⟳ Lade…',
+    gps_btn:              '📍 Meinen Standort automatisch ermitteln',
+    gps_loading:          '📍 Ermittle Standort…',
+    unknown_airline:      'Unbekannte Airline',
+    count:                (n) => `${n} Flugzeuge`,
+    last_update:          (t) => `Update: ${t}`,
+    error:                (m) => `Fehler: ${m}`,
+    saving:               '⏳ Wird gespeichert…',
+    saved:                '✅ Aktiviert! Du wirst per Telegram benachrichtigt.',
+    save_error:           '❌ Fehler beim Speichern. Versuche es erneut.',
+    no_chatid:            '⚠ Bitte Chat-ID eingeben',
+    no_gps:               '⚠ Kein GPS-Standort verfügbar',
+    deleting:             '⏳ Wird gelöscht…',
+    deleted:              '✅ Serverdaten gelöscht.',
+    delete_error:         '❌ Fehler beim Löschen.',
+    no_chatid_delete:     '⚠ Keine Chat-ID gespeichert',
+  },
+  en: {
+    radius:               'Radius: ',
+    alert:                'Alert: ',
+    aircraft:             'Aircraft',
+    flightdata:           'Flight Data',
+    distance:             'Distance',
+    fav_toggle:           '⭐ FAVORITES',
+    fav_add_label:        'Add callsign or prefix',
+    fav_placeholder:      'e.g. LH or LH400',
+    fav_add_btn:          '+ Add',
+    fav_chatid_label:     'Telegram Chat ID',
+    fav_chatid_placeholder: 'e.g. 123456789',
+    fav_save:             '💾 Save & Activate',
+    fav_delete:           '🗑 Delete my data (GDPR)',
+    fav_help_link:        'ℹ How does this work?',
+    fav_chat_hint:        '1. Open <a href="https://t.me/adsb_radar_bot" target="_blank">@adsb_radar_bot</a> in Telegram<br>2. Send <b>/start</b> – the bot replies with your Chat ID<br>3. Enter it here',
+    fav_delete_hint:      'Removes your location, Chat ID and favorites from the server. Local browser data is not affected.',
+    fav_delete_confirm:   'Delete all stored data from the server?',
+    footer_data:          'Data: airplanes.live · Routes: adsbdb.com',
+    footer_legal:         'Legal & Privacy',
+    loading:              '⟳ Loading…',
+    gps_btn:              '📍 Detect my location automatically',
+    gps_loading:          '📍 Detecting location…',
+    unknown_airline:      'Unknown Airline',
+    count:                (n) => `${n} aircraft`,
+    last_update:          (t) => `Updated: ${t}`,
+    error:                (m) => `Error: ${m}`,
+    saving:               '⏳ Saving…',
+    saved:                '✅ Activated! You will be notified via Telegram.',
+    save_error:           '❌ Error saving. Please try again.',
+    no_chatid:            '⚠ Please enter your Chat ID',
+    no_gps:               '⚠ No GPS location available',
+    deleting:             '⏳ Deleting…',
+    deleted:              '✅ Server data deleted.',
+    delete_error:         '❌ Error deleting data.',
+    no_chatid_delete:     '⚠ No Chat ID stored',
+  }
+};
+
+const t = T[LANG];
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key] && typeof t[key] === 'string') {
+      if (el.tagName === 'INPUT' || el.tagName === 'BUTTON' || el.tagName === 'SPAN' || el.tagName === 'LABEL' || el.tagName === 'DIV' || el.tagName === 'A') {
+        if (key === 'fav_chat_hint' || key === 'footer_data') {
+          el.innerHTML = t[key];
+        } else {
+          el.textContent = t[key];
+        }
+      }
+    }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (t[key]) el.placeholder = t[key];
+  });
+  // Chat-Hint separat da HTML
+  const hint = document.getElementById('fav-chat-hint');
+  if (hint) hint.innerHTML = t.fav_chat_hint;
+  // Delete hint
+  const deleteHint = document.querySelector('#fav-panel p[style]');
+  if (deleteHint) deleteHint.textContent = t.fav_delete_hint;
+  // Links auf englische Seiten umstellen
+  if (LANG === 'en') {
+    const helpLink = document.querySelector('a[href="help.html"]');
+    if (helpLink) helpLink.href = 'help_en.html';
+    const legalLink = document.getElementById('legal-link');
+    if (legalLink) legalLink.href = 'legal_en.html';
+  }
+}
 
 // ══════════════════════════════════════════════
 // FAVORITEN
@@ -1263,13 +1381,13 @@ function removeFav(cs) {
 async function saveFavs() {
   const chatId = document.getElementById('fav-chatid').value.trim();
   const status = document.getElementById('fav-status');
-  if (!chatId) { status.textContent = '⚠ Bitte Chat-ID eingeben'; status.style.color = '#f80'; return; }
-  if (!myLat) { status.textContent = '⚠ Kein GPS-Standort verfügbar'; status.style.color = '#f80'; return; }
+  if (!chatId) { status.textContent = t.no_chatid; status.style.color = '#f80'; return; }
+  if (!myLat) { status.textContent = t.no_gps; status.style.color = '#f80'; return; }
 
   favChatId = chatId;
   localStorage.setItem('fav_chat_id', chatId);
 
-  status.textContent = '⏳ Wird gespeichert…';
+  status.textContent = t.saving;
   status.style.color = '#4af';
 
   try {
@@ -1290,13 +1408,13 @@ async function saveFavs() {
     });
     const data = await resp.json();
     if (data.ok) {
-      status.textContent = '✅ Aktiviert! Du wirst per Telegram benachrichtigt.';
+      status.textContent = t.saved;
       status.style.color = '#3f9';
     } else {
       throw new Error('Server error');
     }
   } catch(e) {
-    status.textContent = '❌ Fehler beim Speichern. Versuche es erneut.';
+    status.textContent = t.save_error;
     status.style.color = '#f66';
   }
 }
@@ -1304,9 +1422,9 @@ async function saveFavs() {
 async function deleteFavData() {
   const chatId = favChatId || document.getElementById('fav-chatid').value.trim();
   const status = document.getElementById('fav-status');
-  if (!chatId) { status.textContent = '⚠ Keine Chat-ID gespeichert'; status.style.color = '#f80'; return; }
-  if (!confirm('Alle gespeicherten Daten vom Server löschen?')) return;
-  status.textContent = '⏳ Wird gelöscht…';
+  if (!chatId) { status.textContent = t.no_chatid_delete; status.style.color = '#f80'; return; }
+  if (!confirm(t.fav_delete_confirm)) return;
+  status.textContent = t.deleting;
   status.style.color = '#4af';
   try {
     const resp = await fetch(`${PUSH_SERVER}/delete`, {
@@ -1316,13 +1434,13 @@ async function deleteFavData() {
     });
     const data = await resp.json();
     if (data.ok) {
-      status.textContent = '✅ Serverdaten gelöscht.';
+      status.textContent = t.deleted;
       status.style.color = '#3f9';
     } else {
       throw new Error('Server error');
     }
   } catch(e) {
-    status.textContent = '❌ Fehler beim Löschen.';
+    status.textContent = t.delete_error;
     status.style.color = '#f66';
   }
 }
@@ -1380,10 +1498,10 @@ async function getLocation() {
 
 async function tryGps() {
   const btn = document.getElementById('loc-gps-btn');
-  btn.textContent = '📍 Ermittle Standort…';
+  btn.textContent = t.gps_loading;
   btn.disabled = true;
   await getLocation();
-  btn.textContent = '📍 Meinen Standort automatisch ermitteln';
+  btn.textContent = t.gps_btn;
   btn.disabled = false;
   if (myLat) fetchData();
 }
