@@ -1180,19 +1180,11 @@ function setGpsStatus(color, text) {
 // GPS-TIMEZONE (lokale Uhrzeit am Standort)
 // ══════════════════════════════════════════════
 async function fetchTimezone(lat, lon) {
+  // Browser-eigene Zeitzone nutzen statt externer API (kein CORS-Problem)
   try {
-    const r = await fetch(
-      `https://timezonefinder.michelfe.it/api/0?lat=${lat}&lng=${lon}`,
-      { signal: AbortSignal.timeout(5000) }
-    );
-    const d = await r.json();
-    if (d?.timezone_id) {
-      myTimezone = d.timezone_id;
-      // Radius sofort mit richtiger Ortszeit neu setzen
-      applyI18n();
-autoSetRadius();
-    }
-  } catch { /* Gerätezeitzone bleibt als Fallback */ }
+    myTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    autoSetRadius();
+  } catch { /* Fallback bleibt */ }
 }
 
 // ══════════════════════════════════════════════
@@ -1527,6 +1519,9 @@ async function refreshGpsQuiet() {
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  applyI18n();
+});
 autoSetRadius();
 setInterval(autoSetRadius, 60 * 1000);
 window.addEventListener('resize', resizeCanvas);
