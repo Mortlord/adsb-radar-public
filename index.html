@@ -555,8 +555,8 @@ body {
   </div>
 </div>
 
-<script src="airlines.js"></script>
 <script>
+let AIRLINES = {}; // wird beim Start von Railway geladen
 // ══════════════════════════════════════════════
 // POLYFILLS – Kompatibilität älterer mobiler Browser
 // ══════════════════════════════════════════════
@@ -572,7 +572,7 @@ if (typeof AbortSignal.timeout !== 'function') {
 // LOOKUP TABLES
 // ══════════════════════════════════════════════
 
-// AIRLINES wird aus airlines.js geladen (siehe <script> oben)
+// AIRLINES wird beim Start per fetch von Railway geladen (siehe init())
 
 // ICAO aircraft type code → full name
 const AIRCRAFT_TYPES = {
@@ -1519,20 +1519,28 @@ async function refreshGpsQuiet() {
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
+async function init() {
+  // Airlines von Railway laden (single source of truth)
+  try {
+    const r = await fetch('https://web-production-a6fc8.up.railway.app/airlines');
+    if (r.ok) AIRLINES = await r.json();
+  } catch(e) { console.warn('Airlines konnten nicht geladen werden:', e); }
+
   applyI18n();
-});
-autoSetRadius();
-setInterval(autoSetRadius, 60 * 1000);
-window.addEventListener('resize', resizeCanvas);
-requestAnimationFrame(() => requestAnimationFrame(resizeCanvas));
-drawRadar();
-getLocation().then(() => { if (myLat) { fetchData(); updateServer(); } });
-setInterval(() => { if (myLat) fetchData(); }, REFRESH_MS);
-setInterval(refreshGpsQuiet, 5 * 60 * 1000);
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && myLat) { fetchData(); }
-});
+  autoSetRadius();
+  setInterval(autoSetRadius, 60 * 1000);
+  window.addEventListener('resize', resizeCanvas);
+  requestAnimationFrame(() => requestAnimationFrame(resizeCanvas));
+  drawRadar();
+  getLocation().then(() => { if (myLat) { fetchData(); updateServer(); } });
+  setInterval(() => { if (myLat) fetchData(); }, REFRESH_MS);
+  setInterval(refreshGpsQuiet, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && myLat) { fetchData(); }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => init());
 </script>
 </body>
 </html>
