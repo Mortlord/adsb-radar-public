@@ -49,6 +49,12 @@ body {
 }
 #refresh-btn:hover { background: #2a3a6a; }
 #refresh-btn:disabled { opacity:.5; cursor: not-allowed; }
+#reset-btn {
+  background: #1a2a4a; border: 1px solid #2a4a8a; color: #7a9ccc;
+  padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;
+}
+#reset-btn:hover { background: #2a3a6a; color: #4af; }
+.refresh-icon { display: none; }
 
 /* ── Main Layout ──────────────────────────── */
 #main { display: flex; flex: 1; overflow: hidden; }
@@ -285,9 +291,11 @@ body {
     font-size: 0.72rem;
   }
   #refresh-btn {
-    padding: 4px 10px;
-    font-size: 0.72rem;
+    padding: 4px 8px;
+    font-size: 0.85rem;
   }
+  .refresh-label { display: none; }
+  .refresh-icon { display: inline; }
 
   /* ── Hauptlayout: vertikal stapeln ──────── */
   #main {
@@ -449,9 +457,12 @@ body {
     <span id="last-update">–</span>
   </div>
   <div id="controls">
-    <label data-i18n="radius">Radius: </label><input type="number" id="radius-input" value="40" min="10" max="500"> nm
+    <label data-i18n="radius">Radius: </label><input type="number" id="radius-input" value="40" min="10" max="250"> nm
     <label data-i18n="alert">Alert: </label><input type="number" id="alert-input" value="20" min="1" max="100"> nm
-    <button id="refresh-btn" onclick="fetchData()">⟳ Refresh</button>
+    <div style="display:flex;gap:8px;margin-left:auto;">
+      <button id="reset-btn" onclick="resetRadius()" title="Zurücksetzen">↺</button>
+      <button id="refresh-btn" onclick="fetchData()"><span class="refresh-label">⟳ Refresh</span><span class="refresh-icon">⟳</span></button>
+    </div>
   </div>
 </div>
 
@@ -960,6 +971,14 @@ async function fetchAllOperators() {
 // ══════════════════════════════════════════════
 // MAIN FETCH
 // ══════════════════════════════════════════════
+function resetRadius() {
+  document.getElementById('radius-input').value = 40;
+  document.getElementById('alert-input').value  = 20;
+  localStorage.setItem('userRadius', '40');
+  localStorage.setItem('userAlert',  '20');
+  fetchData();
+}
+
 async function fetchData() {
   if (isFetching) return;          // Parallele Aufrufe verhindern
   if (!myLat) { await getLocation(); if (!myLat) return; }
@@ -1505,6 +1524,20 @@ async function refreshGpsQuiet() {
 // INIT
 // ══════════════════════════════════════════════
 async function init() {
+  // Gespeicherte Werte laden
+  const savedRadius = localStorage.getItem('userRadius');
+  const savedAlert  = localStorage.getItem('userAlert');
+  if (savedRadius) document.getElementById('radius-input').value = savedRadius;
+  if (savedAlert)  document.getElementById('alert-input').value  = savedAlert;
+
+  // Änderungen speichern
+  document.getElementById('radius-input').addEventListener('change', () => {
+    localStorage.setItem('userRadius', document.getElementById('radius-input').value);
+  });
+  document.getElementById('alert-input').addEventListener('change', () => {
+    localStorage.setItem('userAlert', document.getElementById('alert-input').value);
+  });
+
   // Airlines von Railway laden (single source of truth)
   try {
     const r = await fetch('https://web-production-a6fc8.up.railway.app/airlines');
