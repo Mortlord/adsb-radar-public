@@ -449,8 +449,8 @@ body {
     <span id="last-update">–</span>
   </div>
   <div id="controls">
-    <label data-i18n="radius">Radius: </label><input type="number" id="radius-input" value="25" min="10" max="500"> nm
-    <label data-i18n="alert">Alert: </label><input type="number" id="alert-input" value="15" min="1" max="100"> nm
+    <label data-i18n="radius">Radius: </label><input type="number" id="radius-input" value="40" min="10" max="500"> nm
+    <label data-i18n="alert">Alert: </label><input type="number" id="alert-input" value="20" min="1" max="100"> nm
     <button id="refresh-btn" onclick="fetchData()">⟳ Refresh</button>
   </div>
 </div>
@@ -772,7 +772,7 @@ function fmtAltFull(alt) {
 function drawRadar() {
   const W = canvas.width, H = canvas.height;
   const cx = W/2, cy = H/2, R = Math.min(cx,cy) - 4;
-  const radiusNm = parseInt(document.getElementById('radius-input').value) || 25;
+  const radiusNm = parseInt(document.getElementById('radius-input').value) || 40;
 
   ctx.clearRect(0, 0, W, H);
   ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
@@ -804,7 +804,7 @@ function drawRadar() {
   ctx.fillText('W',cx-R+2,cy+4); ctx.textAlign='center';
 
   // alert ring
-  const alertNm = parseInt(document.getElementById('alert-input').value) || 15;
+  const alertNm = parseInt(document.getElementById('alert-input').value) || 20;
   const ar = R*(alertNm/radiusNm);
   if (ar<=R) {
     ctx.beginPath(); ctx.arc(cx,cy,ar,0,Math.PI*2);
@@ -967,7 +967,7 @@ async function fetchData() {
   const btn = document.getElementById('refresh-btn');
   btn.disabled = true;
   document.getElementById('spinner').classList.add('visible');
-  const radius = parseInt(document.getElementById('radius-input').value)||25;
+  const radius = parseInt(document.getElementById('radius-input').value)||40;
 
   try {
     // airplanes.live hat native CORS-Unterstützung → kein Proxy nötig, kein Caching-Problem
@@ -983,7 +983,7 @@ async function fetchData() {
     }
     if (!resp.ok) throw new Error(`HTTP ${resp.status} (proxy)`);
     const data = await resp.json();
-    const alertNm = parseInt(document.getElementById('alert-input').value)||15;
+    const alertNm = parseInt(document.getElementById('alert-input').value)||20;
     const prevHexes = new Set(knownHexes);
     const fresh = {};
 
@@ -1038,8 +1038,8 @@ async function fetchData() {
 // RENDER LIST
 // ══════════════════════════════════════════════
 function renderList() {
-  const radiusNm = parseInt(document.getElementById('radius-input').value)||25;
-  const alertNm  = parseInt(document.getElementById('alert-input').value)||15;
+  const radiusNm = parseInt(document.getElementById('radius-input').value)||40;
+  const alertNm  = parseInt(document.getElementById('alert-input').value)||20;
   const acArr = Object.values(aircraft)
     .filter(ac => ac.lat!=null||ac.dst!=null)
     .map(ac => { ac._dst = ac.dst??(ac.lat!=null?haversine(myLat,myLon,ac.lat,ac.lon):9999); return ac; })
@@ -1092,7 +1092,7 @@ async function selectAircraft(hex) {
 
   // Badges
   const badges = document.getElementById('dp-badges');
-  const alertNm = parseInt(document.getElementById('alert-input').value)||15;
+  const alertNm = parseInt(document.getElementById('alert-input').value)||20;
   badges.innerHTML = `
     ${ac.t?`<span class="badge badge-type">${ac.t}</span>`:''}
     ${ac._dst<=alertNm?'<span class="badge badge-alert">⚠ ALERT ZONE</span>':''}
@@ -1383,8 +1383,8 @@ async function saveFavs() {
   status.style.color = '#4af';
 
   try {
-    const radius    = parseInt(document.getElementById('radius-input').value) || 25;
-    const alertRad  = parseInt(document.getElementById('alert-input').value) || 15;
+    const radius    = parseInt(document.getElementById('radius-input').value) || 40;
+    const alertRad  = parseInt(document.getElementById('alert-input').value) || 20;
     const resp = await fetch(`${PUSH_SERVER}/update`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1440,8 +1440,8 @@ async function deleteFavData() {
 async function updateServer() {
   if (!favChatId || !myLat || !favorites.length) return;
   try {
-    const radius   = parseInt(document.getElementById('radius-input').value) || 25;
-    const alertRad = parseInt(document.getElementById('alert-input').value) || 15;
+    const radius   = parseInt(document.getElementById('radius-input').value) || 40;
+    const alertRad = parseInt(document.getElementById('alert-input').value) || 20;
     await fetch(`${PUSH_SERVER}/update`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
