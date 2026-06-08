@@ -8,7 +8,7 @@ A browser-based ADS-B flight radar for planespotters — no account, no app inst
 
 ## Features
 
-- **Live radar** – all aircraft within a configurable radius (10–500 nm)
+- **Live radar** – all aircraft within a configurable radius (10–250 nm)
 - **GPS-based** – auto-centers on your location
 - **Flight details** – airline, aircraft type, callsign, registration, route, squawk
 - **Origin → Destination** – route data via adsbdb.com
