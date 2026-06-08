@@ -340,7 +340,7 @@
     <div class="section-label">03 — When do notifications arrive?</div>
 
     <h2>Alert Zone</h2>
-    <p>You are notified when a favorite enters your configured alert zone. You can set the radius at the top of the app (default: 15 nm).</p>
+    <p>You are notified when a favorite enters your configured alert zone. You can set the radius at the top of the app (default: 20 nm).</p>
 
     <div class="example-box">
       <span class="label">Active hours</span>
@@ -361,15 +361,26 @@
 
   <!-- TÄGLICHE ZUSAMMENFASSUNG -->
   <div class="section">
-    <div class="section-label">04 — Daily Summary</div>
+    <div class="section-label">04 — Daily Evening Report</div>
 
-    <p>Every morning at <strong>07:55</strong> (your local time) the bot sends a summary of the last 24 hours — all favorites that were in your zone, with time and direction.</p>
+    <p>Every evening at <strong>23:59</strong> the bot sends a daily summary of your favorites.</p>
 
-    <h2>Bot-Befehle</h2>
+    <h2>Favorites</h2>
+    <p>All favorites that entered your alert zone today — with distance, direction and time. After the report, the favorites list is cleared for the next day.</p>
+
+    <div class="example-box">
+      <span class="label">Example report</span>
+      ⭐ Favorites today – 2 unique callsigns<br>
+      &nbsp;&nbsp;THY2AY – 10.0 nm SE (13:40)<br>
+      &nbsp;&nbsp;SWR123 – 8.5 nm N (17:22)
+    </div>
+
+    <h2>Bot Commands</h2>
     <div class="example-box">
       <span class="label">Available commands in the Telegram chat</span>
       <strong>/start</strong> — Show your Chat ID<br>
-      <strong>/stats</strong> — Most frequent visitors in your alert zone today
+      <strong>/stats</strong> — Most frequent visitors in your alert zone today<br>
+      <strong>/unbekannt</strong> — Show unknown callsign groups
     </div>
   </div>
 

@@ -340,7 +340,7 @@
     <div class="section-label">03 — Wann kommen Benachrichtigungen?</div>
 
     <h2>Alert-Zone</h2>
-    <p>Du wirst benachrichtigt wenn ein Favorit in die konfigurierte Alert-Zone fliegt. Den Radius kannst du oben in der App einstellen (Standard: 15 nm).</p>
+    <p>Du wirst benachrichtigt wenn ein Favorit in die konfigurierte Alert-Zone fliegt. Den Radius kannst du oben in der App einstellen (Standard: 20 nm).</p>
 
     <div class="example-box">
       <span class="label">Aktive Zeiten</span>
@@ -361,15 +361,26 @@
 
   <!-- TÄGLICHE ZUSAMMENFASSUNG -->
   <div class="section">
-    <div class="section-label">04 — Tägliche Zusammenfassung</div>
+    <div class="section-label">04 — Täglicher Abendbericht</div>
 
-    <p>Jeden Morgen um <strong>07:55 Uhr</strong> schickt der Bot eine Zusammenfassung der letzten 24 Stunden — alle Favoriten die in deiner Zone waren, mit Uhrzeit und Richtung.</p>
+    <p>Jeden Abend um <strong>23:59 Uhr</strong> schickt der Bot einen Tagesrückblick deiner Favoriten.</p>
+
+    <h2>Favoriten</h2>
+    <p>Alle Favoriten die heute in deiner Alert-Zone waren — mit Distanz, Richtung und Uhrzeit. Nach dem Bericht wird die Favoritenliste für den nächsten Tag geleert.</p>
+
+    <div class="example-box">
+      <span class="label">Beispiel-Bericht</span>
+      ⭐ Favoriten heute – 2 unique Callsigns<br>
+      &nbsp;&nbsp;THY2AY – 10.0 nm SO (13:40)<br>
+      &nbsp;&nbsp;SWR123 – 8.5 nm N (17:22)
+    </div>
 
     <h2>Bot-Befehle</h2>
     <div class="example-box">
       <span class="label">Verfügbare Befehle im Telegram-Chat</span>
       <strong>/start</strong> — Chat-ID anzeigen<br>
-      <strong>/stats</strong> — Häufigste Besucher in deiner Alert-Zone heute
+      <strong>/stats</strong> — Häufigste Besucher in deiner Alert-Zone heute<br>
+      <strong>/unbekannt</strong> — Unbekannte Callsign-Gruppen anzeigen
     </div>
   </div>
 
