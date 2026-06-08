@@ -1183,28 +1183,13 @@ async function fetchTimezone(lat, lon) {
   // Browser-eigene Zeitzone nutzen statt externer API (kein CORS-Problem)
   try {
     myTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    autoSetRadius();
   } catch { /* Fallback bleibt */ }
 }
 
 // ══════════════════════════════════════════════
 // RADIUS NACH ORTSZEIT (GPS-Standort)
 // ══════════════════════════════════════════════
-function autoSetRadius() {
-  let h;
-  try {
-    h = parseInt(new Intl.DateTimeFormat('en-US', {
-      timeZone: myTimezone,
-      hour: 'numeric',
-      hour12: false
-    }).format(new Date()));
-  } catch {
-    h = new Date().getHours();
-  }
-  const target = (h >= 22 || h < 6) ? 35 : 25;
-  const input = document.getElementById('radius-input');
-  if (input && parseInt(input.value) !== target) input.value = target;
-}
+
 
 
 
@@ -1527,8 +1512,6 @@ async function init() {
   } catch(e) { console.warn('Airlines konnten nicht geladen werden:', e); }
 
   applyI18n();
-  autoSetRadius();
-  setInterval(autoSetRadius, 60 * 1000);
   window.addEventListener('resize', resizeCanvas);
   requestAnimationFrame(() => requestAnimationFrame(resizeCanvas));
   drawRadar();
