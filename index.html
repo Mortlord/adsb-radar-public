@@ -211,10 +211,10 @@ body {
 
 /* ── Footer ───────────────────────────────── */
 #footer {
-  padding: 4px 16px;
+  padding: 5px 16px;
   background: #0d1224;
   border-top: 1px solid #1e2d55;
-  font-size: 0.62rem; color: #456;
+  font-size: 0.7rem; color: #6080a0;
   display: flex; justify-content: space-between;
   flex-shrink: 0;
 }
@@ -381,8 +381,8 @@ body {
 
   /* ── Footer: kleiner ─────────────────────── */
   #footer {
-    font-size: 0.55rem;
-    padding: 3px 10px;
+    font-size: 0.65rem;
+    padding: 4px 10px;
   }
 
   /* ── Spinner ─────────────────────────────── */
@@ -744,8 +744,12 @@ const ctx = canvas.getContext('2d');
 function resizeCanvas() {
   const panel = document.getElementById('radar-panel');
   const size = Math.min(panel.clientWidth, panel.clientHeight) - 24;
-  canvas.width = size;
-  canvas.height = size;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   drawRadar();
 }
 
@@ -795,7 +799,7 @@ function drawRadar() {
     ctx.strokeStyle = i===3 ? '#1a2d55' : '#0d1830';
     ctx.lineWidth = i===3 ? 1.5 : .7; ctx.stroke();
     if (f < 1) {
-      ctx.fillStyle = '#243060'; ctx.font = '9px Courier New';
+      ctx.fillStyle = '#3a5090'; ctx.font = '11px Courier New';
       ctx.fillText(`${Math.round(radiusNm*f)}nm`, cx+R*f+3, cy-2);
     }
   });
@@ -809,7 +813,7 @@ function drawRadar() {
   ctx.setLineDash([]);
 
   // cardinals
-  ctx.fillStyle = '#2a5080'; ctx.font = 'bold 10px Courier New'; ctx.textAlign='center';
+  ctx.fillStyle = '#4a70a0'; ctx.font = 'bold 13px Courier New'; ctx.textAlign='center';
   ctx.fillText('N',cx,cy-R+13); ctx.fillText('S',cx,cy+R-3);
   ctx.textAlign='left'; ctx.fillText('E',cx+R-13,cy+4);
   ctx.fillText('W',cx-R+2,cy+4); ctx.textAlign='center';
@@ -849,9 +853,9 @@ function drawRadar() {
     const label = (ac.flight||ac.hex||'').trim();
     ctx.globalAlpha=isSel?1:.7;
     ctx.fillStyle=isSel?'#fff':color;
-    ctx.font=isSel?'bold 8px Courier New':'7.5px Courier New';
+    ctx.font=isSel?'bold 11px Courier New':'10px Courier New';
     ctx.textAlign='left';
-    ctx.fillText(label, x+sz+2, y+3);
+    ctx.fillText(label, x+sz+2, y+4);
     ctx.globalAlpha=1;
   });
 
