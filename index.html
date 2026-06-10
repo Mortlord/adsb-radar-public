@@ -742,6 +742,57 @@ function getCity(icao) {
 const canvas = document.getElementById('radar-canvas');
 const ctx = canvas.getContext('2d');
 
+// Klick auf Radar: nächstes Flugzeug auswählen
+canvas.addEventListener('click', (e) => {
+  if (!myLat) return;
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.width / dpr, H = canvas.height / dpr;
+  const cx = W/2, cy = H/2, R = Math.min(cx, cy) - 4;
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const radiusNm = parseInt(document.getElementById('radius-input').value) || 40;
+
+  let closest = null, closestDist = 18; // max 18px Trefferradius
+  Object.values(aircraft).forEach(ac => {
+    if (ac.lat == null) return;
+    const dst = ac.dst ?? haversine(myLat, myLon, ac.lat, ac.lon);
+    if (dst > radiusNm) return;
+    const brg = bearingTo(myLat, myLon, ac.lat, ac.lon);
+    const frac = dst / radiusNm;
+    const rad = (brg - 90) * Math.PI / 180;
+    const x = cx + R * frac * Math.cos(rad);
+    const y = cy + R * frac * Math.sin(rad);
+    const d = Math.hypot(mx - x, my - y);
+    if (d < closestDist) { closestDist = d; closest = ac; }
+  });
+  if (closest) selectAircraft(closest.hex);
+});
+
+// Cursor ändern wenn über Flugzeug
+canvas.addEventListener('mousemove', (e) => {
+  if (!myLat) return;
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.width / dpr, H = canvas.height / dpr;
+  const cx = W/2, cy = H/2, R = Math.min(cx, cy) - 4;
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const radiusNm = parseInt(document.getElementById('radius-input').value) || 40;
+
+  let hit = false;
+  Object.values(aircraft).forEach(ac => {
+    if (ac.lat == null || hit) return;
+    const dst = ac.dst ?? haversine(myLat, myLon, ac.lat, ac.lon);
+    if (dst > radiusNm) return;
+    const brg = bearingTo(myLat, myLon, ac.lat, ac.lon);
+    const frac = dst / radiusNm;
+    const rad = (brg - 90) * Math.PI / 180;
+    const x = cx + R * frac * Math.cos(rad);
+    const y = cy + R * frac * Math.sin(rad);
+    if (Math.hypot(mx - x, my - y) < 18) hit = true;
+  });
+  canvas.style.cursor = hit ? 'pointer' : 'default';
+});
+
 function resizeCanvas() {
   const panel = document.getElementById('radar-panel');
   const size = Math.min(panel.clientWidth, panel.clientHeight) - 24;
