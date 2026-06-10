@@ -202,6 +202,43 @@ body {
 }
 .dp-arrow span { font-size: 0.6rem; color: #456; }
 
+/* ── Flugzeugfoto ──────────────────────────── */
+#dp-photo-wrap {
+  width: 100%;
+  background: #060910;
+  border-bottom: 1px solid #0f1830;
+  display: none;
+  position: relative;
+}
+#dp-photo-wrap.visible { display: block; }
+#dp-photo {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+#dp-photo.loaded { opacity: 1; }
+#dp-photo-credit {
+  position: absolute;
+  bottom: 0; right: 0;
+  background: rgba(0,0,0,0.6);
+  color: #7a9ccc;
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  font-family: monospace;
+}
+#dp-photo-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e2d55;
+  font-size: 2rem;
+}
+
 .dp-section { padding: 10px 14px; border-bottom: 1px solid #0f1830; }
 .dp-section-title { font-size: 0.6rem; color: #456; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
 .dp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -531,6 +568,11 @@ body {
 </div>
 
 <div id="detail-panel">
+  <div id="dp-photo-wrap">
+    <div id="dp-photo-placeholder">✈</div>
+    <img id="dp-photo" src="" alt="" loading="lazy">
+    <div id="dp-photo-credit"></div>
+  </div>
   <div class="dp-header">
     <span class="dp-close" onclick="closeDetail()">✕</span>
     <div class="dp-callsign" id="dp-callsign">–</div>
@@ -1253,6 +1295,9 @@ async function selectAircraft(hex) {
 
   panel.classList.add('visible');
 
+  // Flugzeugfoto laden
+  loadAircraftPhoto(hex, ac.r);
+
   // Route anzeigen
   function applyRoute(rt) {
     if (!rt) return;
@@ -1278,6 +1323,48 @@ async function selectAircraft(hex) {
       applyRoute(fetched);
       renderList();
     }
+  }
+}
+
+const photoCache = {};
+
+async function loadAircraftPhoto(hex, reg) {
+  const wrap  = document.getElementById('dp-photo-wrap');
+  const img   = document.getElementById('dp-photo');
+  const credit = document.getElementById('dp-photo-credit');
+  const placeholder = document.getElementById('dp-photo-placeholder');
+
+  // Reset
+  img.className = '';
+  img.src = '';
+  credit.textContent = '';
+  wrap.classList.remove('visible');
+  placeholder.style.display = 'flex';
+
+  // Cache prüfen
+  if (photoCache[hex] === null) return; // bekannt kein Foto
+  if (photoCache[hex]) {
+    applyPhoto(photoCache[hex]);
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://api.planespotters.net/pub/photos/hex/${hex}`);
+    if (!res.ok) { photoCache[hex] = null; return; }
+    const data = await res.json();
+    if (!data.photos?.length) { photoCache[hex] = null; return; }
+    const p = data.photos[0];
+    photoCache[hex] = { url: p.thumbnail_large?.src || p.thumbnail?.src, photographer: p.photographer };
+    applyPhoto(photoCache[hex]);
+  } catch { photoCache[hex] = null; }
+
+  function applyPhoto(p) {
+    if (!p?.url) return;
+    wrap.classList.add('visible');
+    placeholder.style.display = 'none';
+    img.onload = () => img.classList.add('loaded');
+    img.src = p.url;
+    credit.textContent = p.photographer ? '© ' + p.photographer : '';
   }
 }
 
