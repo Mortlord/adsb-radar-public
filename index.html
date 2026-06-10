@@ -785,7 +785,8 @@ function fmtAltFull(alt) {
 }
 
 function drawRadar() {
-  const W = canvas.width, H = canvas.height;
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.width / dpr, H = canvas.height / dpr;
   const cx = W/2, cy = H/2, R = Math.min(cx,cy) - 4;
   const radiusNm = parseInt(document.getElementById('radius-input').value) || 40;
 
