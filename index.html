@@ -305,7 +305,7 @@ body {
   /* ── Radar oben, kompakt ─────────────────── */
   #radar-panel {
     flex: 0 0 auto;
-    height: min(52vw, 260px);
+    height: min(80vw, 400px);
     padding: 6px;
     width: 100%;
     justify-content: center;
@@ -453,7 +453,6 @@ body {
   <div id="status-bar">
     <span><div class="dot" id="gps-dot"></div><span id="gps-txt">GPS: –</span></span>
     <span><div class="dot" id="api-dot"></div><span id="api-txt">API: –</span></span>
-    <span id="count-txt">0 Flugzeuge</span>
     <span id="last-update">–</span>
   </div>
   <div id="controls">
@@ -1037,7 +1036,7 @@ async function fetchData() {
     lastFetchTime = Date.now();
     setApiStatus('green', `${data.total??Object.keys(aircraft).length} Flugzeuge`);
     document.getElementById('last-update').textContent = t.last_update(new Date().toLocaleTimeString(LANG==='de'?'de-DE':'en-GB'));
-    document.getElementById('count-txt').textContent = t.count(Object.keys(aircraft).length);
+
 
     if (selectedHex && aircraft[selectedHex]) selectAircraft(selectedHex);
 
