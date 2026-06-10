@@ -3,8 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>✈ ADSB Radar</title>
-<meta name="description" content="Live ADS-B aircraft radar – powered by adsb.lol">
+<title>✈ ADS-B Radar – Live Flight Tracker</title>
+<meta name="description" content="Free live ADS-B flight radar. Track aircraft near you in real time – no account needed. Favorites & Telegram notifications included.">
+<meta name="theme-color" content="#0a0e1a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<!-- Open Graph -->
+<meta property="og:title" content="✈ ADS-B Radar – Live Flight Tracker">
+<meta property="og:description" content="Free live ADS-B flight radar. Track aircraft near you in real time – no account needed.">
+<meta property="og:url" content="https://adsb-radar.de">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://adsb-radar.de/og-image.png">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="✈ ADS-B Radar – Live Flight Tracker">
+<meta name="twitter:description" content="Free live ADS-B flight radar. Track aircraft near you in real time.">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -231,6 +244,40 @@ body {
 #spinner.visible { display: flex; }
 
 /* ── Location Modal ───────────────────────── */
+/* ── Onboarding Modal ─────────────────────── */
+#onboard-modal {
+  display: flex; position: fixed; inset: 0;
+  background: rgba(5,8,18,0.97);
+  align-items: center; justify-content: center;
+  z-index: 500;
+}
+#onboard-modal.hidden { display: none; }
+#onboard-box {
+  background: #0d1224;
+  border: 1px solid #2a4a8a;
+  border-radius: 12px;
+  padding: 36px 32px;
+  width: min(420px, 92vw);
+  text-align: center;
+  box-shadow: 0 0 60px rgba(0,80,200,.25);
+}
+.onboard-icon { font-size: 2.5rem; margin-bottom: 8px; }
+#onboard-box h2 { color: #4af; font-size: 1.3rem; letter-spacing: 3px; margin-bottom: 8px; }
+.onboard-sub { color: #7a9ccc; font-size: 0.82rem; margin-bottom: 24px; }
+.onboard-features { text-align: left; margin-bottom: 24px; }
+.onboard-feat { color: #c0d4f0; font-size: 0.82rem; padding: 6px 0; border-bottom: 1px solid #1e2d55; }
+.onboard-feat:last-child { border-bottom: none; }
+#onboard-btn {
+  width: 100%; padding: 12px;
+  background: #0d2a1a; border: 1px solid #2a6a3a; color: #3f9;
+  border-radius: 6px; cursor: pointer;
+  font-family: monospace; font-size: 0.9rem;
+  margin-bottom: 12px;
+  transition: background 0.2s;
+}
+#onboard-btn:hover { background: #0f3a22; }
+.onboard-note { color: #456; font-size: 0.68rem; line-height: 1.5; }
+
 #loc-modal {
   display: none; position: fixed; inset: 0;
   background: rgba(5,8,18,.85);
@@ -557,6 +604,23 @@ body {
 <div id="spinner" data-i18n="loading">⟳ Lade…</div>
 
 <!-- GPS Fehlermeldung -->
+<div id="onboard-modal">
+  <div id="onboard-box">
+    <div class="onboard-icon">✈</div>
+    <h2>ADS-B RADAR</h2>
+    <p class="onboard-sub">Live flight tracker — free, no account needed</p>
+    <div class="onboard-features">
+      <div class="onboard-feat">📡 Real-time aircraft positions</div>
+      <div class="onboard-feat">⭐ Favorites & Telegram alerts</div>
+      <div class="onboard-feat">🔒 No tracking, no cookies</div>
+    </div>
+    <button id="onboard-btn" onclick="startApp()">
+      📍 Allow location &amp; start
+    </button>
+    <p class="onboard-note">Your location stays on your device and is only used to center the radar.</p>
+  </div>
+</div>
+
 <div id="loc-modal">
   <div id="loc-box">
     <h2>✈ STANDORT ERFORDERLICH</h2>
@@ -1605,12 +1669,63 @@ async function init() {
   window.addEventListener('resize', resizeCanvas);
   requestAnimationFrame(() => requestAnimationFrame(resizeCanvas));
   drawRadar();
-  getLocation().then(() => { if (myLat) { fetchData(); updateServer(); } });
+  // Onboarding prüfen
+  if (localStorage.getItem('onboarded')) {
+    document.getElementById('onboard-modal').classList.add('hidden');
+    getLocation().then(() => { if (myLat) { fetchData(); updateServer(); } });
+  }
+  // sonst wartet startApp() auf Button-Klick
+
   setInterval(() => { if (myLat) fetchData(); }, REFRESH_MS);
   setInterval(refreshGpsQuiet, 5 * 60 * 1000);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && myLat) { fetchData(); }
   });
+}
+
+// Service Worker registrieren
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// PWA Install-Prompt
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  // Install-Banner nach 30s zeigen wenn Nutzer aktiv ist
+  setTimeout(() => showInstallBanner(), 30000);
+});
+
+function showInstallBanner() {
+  if (!deferredInstallPrompt) return;
+  const banner = document.createElement('div');
+  banner.id = 'install-banner';
+  banner.innerHTML = `
+    <span>📲 Add ADS-B Radar to your home screen</span>
+    <button onclick="installApp()">Install</button>
+    <button onclick="this.parentElement.remove()">✕</button>
+  `;
+  banner.style.cssText = 'position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:#0d1224;border:1px solid #2a4a8a;border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;z-index:300;font-size:0.75rem;color:#c0d4f0;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.5)';
+  banner.querySelector('button').style.cssText = 'background:#0d2a1a;border:1px solid #2a6a3a;color:#3f9;padding:4px 12px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:0.75rem';
+  banner.querySelectorAll('button')[1].style.cssText = 'background:none;border:none;color:#456;cursor:pointer;font-size:1rem;padding:0 4px';
+  document.body.appendChild(banner);
+}
+
+async function installApp() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.remove();
+}
+
+// Onboarding: beim ersten Besuch zeigen, danach nicht mehr
+function startApp() {
+  localStorage.setItem('onboarded', '1');
+  document.getElementById('onboard-modal').classList.add('hidden');
+  getLocation().then(() => { if (myLat) { fetchData(); updateServer(); } });
 }
 
 document.addEventListener('DOMContentLoaded', () => init());
