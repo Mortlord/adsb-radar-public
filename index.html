@@ -1051,17 +1051,14 @@ async function fetchRoute(callsign) {
   if (routeCache[cs] !== undefined) return routeCache[cs];
   routeCache[cs] = null; // Platzhalter gegen Doppel-Anfragen
   try {
-    const r = await fetch(`https://api.adsbdb.com/v0/callsign/${encodeURIComponent(cs)}`,
-                          {signal: AbortSignal.timeout(6000)});
+    const r = await fetch(`https://web-production-a6fc8.up.railway.app/route?callsign=${encodeURIComponent(cs)}`,
+                          {signal: AbortSignal.timeout(8000)});
     if (!r.ok) return null;
     const d = await r.json();
-    const fr = d?.response?.flightroute;
-    // Airline-Name wird nicht hier gecacht – fetchOperator() macht das zuverlässiger
-    // mit Registrierungs-Fallback (SP- = Sprint Air, HA- = Fleet Air etc.)
-    if (!fr?.origin?.iata_code || !fr?.destination?.iata_code) return null;
+    if (!d?.route?.orig?.iata || !d?.route?.dest?.iata) return null;
     const route = {
-      orig: { iata: fr.origin.iata_code,      icao: fr.origin.icao_code,      city: AIRPORTS[fr.origin.iata_code] || AIRPORTS[fr.origin.icao_code] || fr.origin.municipality      || fr.origin.name },
-      dest: { iata: fr.destination.iata_code, icao: fr.destination.icao_code, city: AIRPORTS[fr.destination.iata_code] || AIRPORTS[fr.destination.icao_code] || fr.destination.municipality || fr.destination.name },
+      orig: { iata: d.route.orig.iata, icao: d.route.orig.icao || '', city: AIRPORTS[d.route.orig.iata] || d.route.orig.city || '' },
+      dest: { iata: d.route.dest.iata, icao: d.route.dest.icao || '', city: AIRPORTS[d.route.dest.iata] || d.route.dest.city || '' },
     };
     routeCache[cs] = route;
     return route;
