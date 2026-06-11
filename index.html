@@ -1055,11 +1055,13 @@ async function fetchRoute(callsign) {
                           {signal: AbortSignal.timeout(8000)});
     if (!r.ok) return null;
     const d = await r.json();
+    console.log(`Route response for ${cs}:`, JSON.stringify(d));
     if (!d?.route?.orig?.iata || !d?.route?.dest?.iata) return null;
     const route = {
       orig: { iata: d.route.orig.iata, icao: d.route.orig.icao || '', city: AIRPORTS[d.route.orig.iata] || d.route.orig.city || '' },
       dest: { iata: d.route.dest.iata, icao: d.route.dest.icao || '', city: AIRPORTS[d.route.dest.iata] || d.route.dest.city || '' },
     };
+    console.log(`Route cached for ${cs}:`, route);
     routeCache[cs] = route;
     return route;
   } catch { return null; }
