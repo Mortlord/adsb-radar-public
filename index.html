@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Content-Security-Policy als zusaetzliche XSS-Verteidigung.
+     Hinweis: frame-ancestors/X-Frame-Options wirken nur als HTTP-Header,
+     daher idealerweise zusaetzlich auf dem Static-Host setzen. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.airplanes.live https://api.adsbdb.com https://api.planespotters.net https://web-production-a6fc8.up.railway.app; font-src 'self'; object-src 'none'; base-uri 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'">
 <title>✈ ADS-B Radar – Live Flight Tracker</title>
 <meta name="description" content="Free live ADS-B flight radar. Track aircraft near you in real time – no account needed. Favorites & Telegram notifications included.">
 <meta name="theme-color" content="#0a0e1a">
@@ -624,13 +628,13 @@ body {
   <button onclick="addFav()" style="width:100%;padding:5px;background:#0d1f3a;border:1px solid #1e3a5a;color:#4af;border-radius:4px;cursor:pointer;font-family:inherit;font-size:0.75rem;margin-bottom:8px;" data-i18n="fav_add_btn">+ Hinzufügen</button>
   <div id="fav-tags"></div>
   <hr class="fav-sep">
-  <label data-i18n="fav_chatid_label">Telegram Chat-ID</label>
+  <label data-i18n="fav_chatid_label">Aktivierungscode</label>
   <div id="fav-chat-hint">
     1. Schreibe <a href="https://t.me/adsb_radar_bot" target="_blank">@adsb_radar_bot</a> in Telegram<br>
-    2. Sende <b>/start</b> – der Bot antwortet mit deiner Chat-ID<br>
-    3. Trage sie hier ein
+    2. Sende <b>/start</b> – der Bot antwortet mit deinem Aktivierungscode<br>
+    3. Trage ihn hier ein
   </div>
-  <input type="text" id="fav-chatid" placeholder="z.B. 123456789" data-i18n-placeholder="fav_chatid_placeholder" maxlength="20">
+  <input type="text" id="fav-chatid" placeholder="Aktivierungscode" data-i18n-placeholder="fav_chatid_placeholder" maxlength="64" autocomplete="off">
   <button id="fav-save-btn" onclick="saveFavs()" data-i18n="fav_save">💾 Speichern &amp; Aktivieren</button>
   <div id="fav-status"></div>
   <hr class="fav-sep">
@@ -706,7 +710,7 @@ const AIRCRAFT_TYPES = {
   A388:'Airbus A380-800',
   // Boeing
   B37M:'Boeing 737 MAX 7', B38M:'Boeing 737 MAX 8', B39M:'Boeing 737 MAX 9',
-  B3XM:'Boeing 737 MAX 10', B461:'BAe 146-100', B463:'BAe 146-300',
+  B3XM:'Boeing 737 MAX 10', B461:'BAe 146-100',
   B703:'Boeing 707', B712:'Boeing 717', B721:'Boeing 727-100',
   B722:'Boeing 727-200', B732:'Boeing 737-200', B733:'Boeing 737-300',
   B734:'Boeing 737-400', B735:'Boeing 737-500', B736:'Boeing 737-600',
@@ -740,7 +744,7 @@ const AIRCRAFT_TYPES = {
   C421:'Cessna 421', C441:'Cessna Conquest', C500:'Cessna Citation I',
   C525:'Cessna CitationJet', C550:'Cessna Citation II', C560:'Cessna Citation V',
   C650:'Cessna Citation III', C680:'Cessna Citation Sovereign', C700:'Cessna Citation Longitude',
-  C750:'Cessna Citation X', CL60:'Challenger 600', CL30:'Bombardier Challenger 300',
+  C750:'Cessna Citation X', CL30:'Bombardier Challenger 300',
   CL35:'Bombardier Challenger 350', CL60:'Bombardier Challenger 600',
   DC10:'McDonnell Douglas DC-10', DC85:'Douglas DC-8-50', DC86:'Douglas DC-8-60',
   DC87:'Douglas DC-8-70', DC91:'Douglas DC-9-10', DC93:'Douglas DC-9-30',
@@ -823,6 +827,16 @@ let isFetching = false;
 let myTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Fallback: Gerätezeitzone
 
 const REFRESH_MS = 60000;
+
+// HTML-Escaping gegen DOM-XSS aus API- und Nutzerdaten (Punkt 6)
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 function getAirline(callsign, reg) {
   if (!callsign) return '';
@@ -1150,10 +1164,10 @@ async function fetchData() {
   const radius = parseInt(document.getElementById('radius-input').value)||40;
 
   try {
-    // airplanes.live hat native CORS-Unterstützung → kein Proxy nötig, kein Caching-Problem
-    // Fallback auf corsproxy.io falls direkt blockiert
+    // airplanes.live hat native CORS-Unterstuetzung. Fallback ueber EIGENEN Proxy,
+    // damit GPS-Koordinaten nicht an einen Drittanbieter gehen (Punkt 7)
     const directUrl = `https://api.airplanes.live/v2/point/${myLat.toFixed(4)}/${myLon.toFixed(4)}/${radius}`;
-    const proxyUrl  = `https://corsproxy.io/?${encodeURIComponent(directUrl)}`;
+    const proxyUrl  = `${PUSH_SERVER}/aircraft?lat=${myLat.toFixed(4)}&lon=${myLon.toFixed(4)}&radius=${radius}`;
     let resp;
     try {
       resp = await fetch(directUrl, { signal: AbortSignal.timeout(10000) });
@@ -1237,12 +1251,13 @@ function renderList() {
     const typeName = ac.t ? (AIRCRAFT_TYPES[ac.t.toUpperCase()]||ac.t) : '–';
     const rt = routeCache[call];
     const routeStr = rt ? `${rt.orig.iata}›${rt.dest.iata}` : '–';
+    // Alle aus APIs stammenden Werte escapen (Punkt 6)
     row.innerHTML = `
-      <span class="col-call">${call}</span>
-      <span class="col-airline">${airline||'–'}</span>
-      <span class="col-type">${ac.t||'–'}</span>
-      <span class="col-route">${routeStr}</span>
-      <span class="col-alt ${altClass(ac.alt_baro)}">${fmtAlt(ac.alt_baro)}</span>
+      <span class="col-call">${escapeHtml(call)}</span>
+      <span class="col-airline">${escapeHtml(airline||'–')}</span>
+      <span class="col-type">${escapeHtml(ac.t||'–')}</span>
+      <span class="col-route">${escapeHtml(routeStr)}</span>
+      <span class="col-alt ${altClass(ac.alt_baro)}">${escapeHtml(fmtAlt(ac.alt_baro))}</span>
       <span class="col-dist">${ac._dst<9999?ac._dst.toFixed(1):'–'}</span>
       <span class="col-spd">${ac.gs?Math.round(ac.gs):'–'}</span>
     `;
@@ -1274,7 +1289,7 @@ async function selectAircraft(hex) {
   const badges = document.getElementById('dp-badges');
   const alertNm = parseInt(document.getElementById('alert-input').value)||20;
   badges.innerHTML = `
-    ${ac.t?`<span class="badge badge-type">${ac.t}</span>`:''}
+    ${ac.t?`<span class="badge badge-type">${escapeHtml(ac.t)}</span>`:''}
     ${ac._dst<=alertNm?'<span class="badge badge-alert">⚠ ALERT ZONE</span>':''}
   `;
 
@@ -1434,12 +1449,12 @@ const T = {
     fav_add_label:        'Callsign oder Prefix hinzufügen',
     fav_placeholder:      'z.B. LH oder LH400',
     fav_add_btn:          '+ Hinzufügen',
-    fav_chatid_label:     'Telegram Chat-ID',
-    fav_chatid_placeholder: 'z.B. 123456789',
+    fav_chatid_label:     'Aktivierungscode',
+    fav_chatid_placeholder: 'Aktivierungscode',
     fav_save:             '💾 Speichern & Aktivieren',
     fav_delete:           '🗑 Meine Daten löschen (DSGVO)',
     fav_help_link:        'ℹ Wie funktioniert das?',
-    fav_chat_hint:        '1. Schreibe <a href="https://t.me/adsb_radar_bot" target="_blank">@adsb_radar_bot</a> in Telegram<br>2. Sende <b>/start</b> – der Bot antwortet mit deiner Chat-ID<br>3. Trage sie hier ein',
+    fav_chat_hint:        '1. Schreibe <a href="https://t.me/adsb_radar_bot" target="_blank">@adsb_radar_bot</a> in Telegram<br>2. Sende <b>/start</b> – der Bot antwortet mit deinem Aktivierungscode<br>3. Trage ihn hier ein',
     fav_delete_hint:      'Löscht Standort, Chat-ID und Favoriten vom Server. Lokale Daten bleiben im Browser erhalten.',
     fav_delete_confirm:   'Alle gespeicherten Daten vom Server löschen?',
     footer_data:          'Daten: airplanes.live · Routen: adsbdb.com',
@@ -1454,12 +1469,12 @@ const T = {
     saving:               '⏳ Wird gespeichert…',
     saved:                '✅ Aktiviert! Du wirst per Telegram benachrichtigt.',
     save_error:           '❌ Fehler beim Speichern. Versuche es erneut.',
-    no_chatid:            '⚠ Bitte Chat-ID eingeben',
+    no_chatid:            '⚠ Bitte Aktivierungscode eingeben',
     no_gps:               '⚠ Kein GPS-Standort verfügbar',
     deleting:             '⏳ Wird gelöscht…',
     deleted:              '✅ Serverdaten gelöscht.',
     delete_error:         '❌ Fehler beim Löschen.',
-    no_chatid_delete:     '⚠ Keine Chat-ID gespeichert',
+    no_chatid_delete:     '⚠ Kein Aktivierungscode gespeichert',
   },
   en: {
     radius:               'Radius: ',
@@ -1471,12 +1486,12 @@ const T = {
     fav_add_label:        'Add callsign or prefix',
     fav_placeholder:      'e.g. LH or LH400',
     fav_add_btn:          '+ Add',
-    fav_chatid_label:     'Telegram Chat ID',
-    fav_chatid_placeholder: 'e.g. 123456789',
+    fav_chatid_label:     'Activation code',
+    fav_chatid_placeholder: 'Activation code',
     fav_save:             '💾 Save & Activate',
     fav_delete:           '🗑 Delete my data (GDPR)',
     fav_help_link:        'ℹ How does this work?',
-    fav_chat_hint:        '1. Open <a href="https://t.me/adsb_radar_bot" target="_blank">@adsb_radar_bot</a> in Telegram<br>2. Send <b>/start</b> – the bot replies with your Chat ID<br>3. Enter it here',
+    fav_chat_hint:        '1. Open <a href="https://t.me/adsb_radar_bot" target="_blank">@adsb_radar_bot</a> in Telegram<br>2. Send <b>/start</b> – the bot replies with your activation code<br>3. Enter it here',
     fav_delete_hint:      'Removes your location, Chat ID and favorites from the server. Local browser data is not affected.',
     fav_delete_confirm:   'Delete all stored data from the server?',
     footer_data:          'Data: airplanes.live · Routes: adsbdb.com',
@@ -1491,12 +1506,12 @@ const T = {
     saving:               '⏳ Saving…',
     saved:                '✅ Activated! You will be notified via Telegram.',
     save_error:           '❌ Error saving. Please try again.',
-    no_chatid:            '⚠ Please enter your Chat ID',
+    no_chatid:            '⚠ Please enter your activation code',
     no_gps:               '⚠ No GPS location available',
     deleting:             '⏳ Deleting…',
     deleted:              '✅ Server data deleted.',
     delete_error:         '❌ Error deleting data.',
-    no_chatid_delete:     '⚠ No Chat ID stored',
+    no_chatid_delete:     '⚠ No activation code stored',
   }
 };
 
@@ -1540,14 +1555,15 @@ function applyI18n() {
 const PUSH_SERVER = 'https://web-production-a6fc8.up.railway.app';
 
 let favorites = JSON.parse(localStorage.getItem('fav_callsigns') || '[]');
-let favChatId = localStorage.getItem('fav_chat_id') || '';
+// Aktivierungscode (Token) statt Chat-ID; alte Werte werden verworfen (Punkt 1)
+let favToken = localStorage.getItem('fav_token') || '';
 
 function toggleFavPanel() {
   const panel = document.getElementById('fav-panel');
   panel.classList.toggle('visible');
   if (panel.classList.contains('visible')) {
     renderFavTags();
-    document.getElementById('fav-chatid').value = favChatId;
+    document.getElementById('fav-chatid').value = favToken;
   }
 }
 
@@ -1557,7 +1573,12 @@ function renderFavTags() {
   favorites.forEach(cs => {
     const tag = document.createElement('span');
     tag.className = 'fav-tag';
-    tag.innerHTML = `${cs} <button onclick="removeFav('${cs}')">✕</button>`;
+    // Text als textContent, kein HTML-Interpolation (Punkt 6)
+    tag.append(cs + ' ');
+    const btn = document.createElement('button');
+    btn.textContent = '✕';
+    btn.addEventListener('click', () => removeFav(cs));
+    tag.appendChild(btn);
     container.appendChild(tag);
   });
 }
@@ -1566,6 +1587,8 @@ function addFav() {
   const input = document.getElementById('fav-input');
   const val = input.value.trim().toUpperCase();
   if (!val || val.length < 2) return;
+  // Nur Callsign-Zeichen zulassen (Punkt 6)
+  if (!/^[A-Z0-9]{2,8}$/.test(val)) { input.value = ''; return; }
   if (!favorites.includes(val)) {
     favorites.push(val);
     localStorage.setItem('fav_callsigns', JSON.stringify(favorites));
@@ -1581,13 +1604,13 @@ function removeFav(cs) {
 }
 
 async function saveFavs() {
-  const chatId = document.getElementById('fav-chatid').value.trim();
+  const token = document.getElementById('fav-chatid').value.trim();
   const status = document.getElementById('fav-status');
-  if (!chatId) { status.textContent = t.no_chatid; status.style.color = '#f80'; return; }
+  if (!token) { status.textContent = t.no_chatid; status.style.color = '#f80'; return; }
   if (!myLat) { status.textContent = t.no_gps; status.style.color = '#f80'; return; }
 
-  favChatId = chatId;
-  localStorage.setItem('fav_chat_id', chatId);
+  favToken = token;
+  localStorage.setItem('fav_token', token);
 
   status.textContent = t.saving;
   status.style.color = '#4af';
@@ -1599,7 +1622,7 @@ async function saveFavs() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id:      chatId,
+        token:        token,
         lat:          myLat,
         lon:          myLon,
         radius:       radius,
@@ -1622,9 +1645,9 @@ async function saveFavs() {
 }
 
 async function deleteFavData() {
-  const chatId = favChatId || document.getElementById('fav-chatid').value.trim();
+  const token = favToken || document.getElementById('fav-chatid').value.trim();
   const status = document.getElementById('fav-status');
-  if (!chatId) { status.textContent = t.no_chatid_delete; status.style.color = '#f80'; return; }
+  if (!token) { status.textContent = t.no_chatid_delete; status.style.color = '#f80'; return; }
   if (!confirm(t.fav_delete_confirm)) return;
   status.textContent = t.deleting;
   status.style.color = '#4af';
@@ -1632,12 +1655,15 @@ async function deleteFavData() {
     const resp = await fetch(`${PUSH_SERVER}/delete`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId })
+      body: JSON.stringify({ token: token })
     });
     const data = await resp.json();
     if (data.ok) {
       status.textContent = t.deleted;
       status.style.color = '#3f9';
+      // Lokalen Token nach erfolgreichem Loeschen verwerfen
+      favToken = '';
+      localStorage.removeItem('fav_token');
     } else {
       throw new Error('Server error');
     }
@@ -1648,7 +1674,7 @@ async function deleteFavData() {
 }
 
 async function updateServer() {
-  if (!favChatId || !myLat || !favorites.length) return;
+  if (!favToken || !myLat || !favorites.length) return;
   try {
     const radius   = parseInt(document.getElementById('radius-input').value) || 40;
     const alertRad = parseInt(document.getElementById('alert-input').value) || 20;
@@ -1656,7 +1682,7 @@ async function updateServer() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id:      favChatId,
+        token:        favToken,
         lat:          myLat,
         lon:          myLon,
         radius:       radius,
