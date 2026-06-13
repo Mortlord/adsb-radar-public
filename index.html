@@ -822,6 +822,9 @@ let aircraft = {};
 let knownHexes = new Set();
 let selectedHex = null;
 let routeCache = {};
+// Pro Callsign: Zeitpunkt, ab dem ein erneuter Routen-Versuch erlaubt ist.
+// Verhindert, dass transiente Fehlschlaege (Cooldown, Timeout) dauerhaft als "keine Route" haengen.
+let routeRetry = {};
 let operatorCache = {};
 let isFetching = false;
 let myTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Fallback: Gerätezeitzone
@@ -1062,22 +1065,35 @@ function bearingTo(lat1,lon1,lat2,lon2) {
 async function fetchRoute(callsign) {
   if (!callsign) return null;
   const cs = callsign.trim();
-  if (routeCache[cs] !== undefined) return routeCache[cs];
-  routeCache[cs] = null; // Platzhalter gegen Doppel-Anfragen
+  const now = Date.now();
+  // Bereits als Route bekannt
+  if (routeCache[cs] && routeCache[cs].orig) return routeCache[cs];
+  // Kuerzlich erfolglos oder gerade in Arbeit -> noch nicht erneut versuchen
+  if (routeRetry[cs] && now < routeRetry[cs]) return null;
+  routeRetry[cs] = now + 10000; // Schutz gegen parallele Doppel-Anfragen (>= Timeout)
   try {
     const r = await fetch(`https://web-production-a6fc8.up.railway.app/route?callsign=${encodeURIComponent(cs)}`,
                           {signal: AbortSignal.timeout(8000)});
-    if (!r.ok) return null;
+    if (!r.ok) { routeRetry[cs] = now + 60000; return null; } // transient: in 60s erneut
     const d = await r.json();
-    if (!d?.route?.orig?.iata || !d?.route?.dest?.iata) return null;
-    const route = {
-      orig: { iata: d.route.orig.iata, icao: d.route.orig.icao || '', city: AIRPORTS[d.route.orig.iata] || d.route.orig.city || '' },
-      dest: { iata: d.route.dest.iata, icao: d.route.dest.icao || '', city: AIRPORTS[d.route.dest.iata] || d.route.dest.city || '' },
-    };
-    routeCache[cs] = route;
-    renderList(); // Route sofort anzeigen
-    return route;
-  } catch { return null; }
+    if (d?.route?.orig?.iata && d?.route?.dest?.iata) {
+      const route = {
+        orig: { iata: d.route.orig.iata, icao: d.route.orig.icao || '', city: AIRPORTS[d.route.orig.iata] || d.route.orig.city || '' },
+        dest: { iata: d.route.dest.iata, icao: d.route.dest.icao || '', city: AIRPORTS[d.route.dest.iata] || d.route.dest.city || '' },
+      };
+      routeCache[cs] = route;
+      delete routeRetry[cs];
+      renderList(); // Route sofort anzeigen
+      return route;
+    }
+    // Keine Route: bei Drosselung bald erneut, bei echter Fehlanzeige laenger warten
+    const transient = d?.source === 'cooldown' || d?.source === 'ratelimited';
+    routeRetry[cs] = now + (transient ? 60000 : 30 * 60000);
+    return null;
+  } catch {
+    routeRetry[cs] = now + 60000; // Timeout/Netzfehler: in 60s erneut
+    return null;
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -1088,7 +1104,9 @@ async function fetchRoute(callsign) {
 async function fetchAllRoutes() {
   const calls = Object.values(aircraft)
     .map(ac => (ac.flight||'').trim())
-    .filter(cs => cs.length >= 3 && !Object.prototype.hasOwnProperty.call(routeCache, cs));
+    .filter(cs => cs.length >= 3
+                  && !(routeCache[cs] && routeCache[cs].orig)
+                  && !(routeRetry[cs] && Date.now() < routeRetry[cs]));
 
   const BATCH = 4;
   for (let i = 0; i < calls.length; i += BATCH) {
