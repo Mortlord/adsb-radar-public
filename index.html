@@ -846,8 +846,12 @@ function getAirline(callsign, reg) {
   const cs = callsign.trim();
   // 1. Callsign-spezifischer Cache (aus API)
   if (operatorCache[cs]) return operatorCache[cs];
-  // 2. Hardcodierte ICAO-Prefix-Map
-  return AIRLINES[cs.slice(0,3).toUpperCase()] || '';
+  // 2. Hardcodierte ICAO-Prefix-Map – nur für echte Airline-Rufzeichen
+  //    (3 Buchstaben gefolgt von einer Ziffer). Verhindert Falschtreffer bei
+  //    Flugzeug-Kennzeichen wie HBCAT (HB-CAT) oder DEFXF (D-EFXF).
+  const up = cs.toUpperCase();
+  if (!/^[A-Z]{3}[0-9]/.test(up)) return '';
+  return AIRLINES[up.slice(0,3)] || '';
 }
 
 function getAircraftName(code) {
@@ -1125,8 +1129,12 @@ async function fetchAllRoutes() {
 async function fetchOperator(callsign, reg) {
   if (!callsign) return null;
   const cs = callsign.trim();
-  const prefix = cs.slice(0,3).toUpperCase();
-  if (!/^[A-Z]{3}$/.test(prefix)) return null;
+  const up = cs.toUpperCase();
+  const prefix = up.slice(0,3);
+  // Nur echte Airline-Rufzeichen (3 Buchstaben + Ziffer). Kennzeichen wie
+  // HBCAT (HB-CAT) oder DEFXF (D-EFXF) ausschliessen -> kein Falschtreffer,
+  // und keine unnötigen adsbdb-Aufrufe für Kennzeichen.
+  if (!/^[A-Z]{3}[0-9]/.test(up)) return null;
   if (Object.prototype.hasOwnProperty.call(operatorCache, cs)) return operatorCache[cs];
 
   // Hardcodierte Map hat Vorrang – verhindert veraltete adsbdb-Einträge
