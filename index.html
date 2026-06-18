@@ -635,6 +635,7 @@ body {
     3. Trage ihn hier ein
   </div>
   <input type="text" id="fav-chatid" placeholder="Aktivierungscode" data-i18n-placeholder="fav_chatid_placeholder" maxlength="64" autocomplete="off">
+  <p style="color:#456;font-size:0.65rem;margin:6px 0 8px;line-height:1.4;"><span data-i18n="fav_consent">Mit „Speichern & Aktivieren" werden Standort, Aktivierungscode und Favoriten an unseren Server übertragen, um dir Telegram-Benachrichtigungen zu senden. Mehr dazu in der </span><a id="fav-consent-link" href="legal.html" target="_blank" style="color:#5a7a9a;" data-i18n="fav_consent_link">Datenschutzerklärung</a>.</p>
   <button id="fav-save-btn" onclick="saveFavs()" data-i18n="fav_save">💾 Speichern &amp; Aktivieren</button>
   <div id="fav-status"></div>
   <hr class="fav-sep">
@@ -663,7 +664,7 @@ body {
     <button id="onboard-btn" onclick="startApp()">
       📍 Allow location &amp; start
     </button>
-    <p class="onboard-note">Your location stays on your device and is only used to center the radar.</p>
+    <p class="onboard-note"><span data-i18n="onboard_privacy">Dein Standort wird genutzt, um Flugzeuge in deiner Nähe anzuzeigen. Für den Abruf der Flugdaten wird er an unseren Server übertragen, dort aber nicht dauerhaft gespeichert. Details in der </span><a id="onboard-legal-link" href="legal.html" target="_blank" style="color:#5a7a9a;" data-i18n="onboard_privacy_link">Datenschutzerklärung</a>.</p>
   </div>
 </div>
 
@@ -1502,6 +1503,10 @@ const T = {
     deleted:              '✅ Serverdaten gelöscht.',
     delete_error:         '❌ Fehler beim Löschen.',
     no_chatid_delete:     '⚠ Kein Aktivierungscode gespeichert',
+    onboard_privacy:      'Dein Standort wird genutzt, um Flugzeuge in deiner Nähe anzuzeigen. Für den Abruf der Flugdaten wird er an unseren Server übertragen, dort aber nicht dauerhaft gespeichert. Details in der ',
+    onboard_privacy_link: 'Datenschutzerklärung',
+    fav_consent:          'Mit „Speichern & Aktivieren" werden Standort, Aktivierungscode und Favoriten an unseren Server übertragen, um dir Telegram-Benachrichtigungen zu senden. Mehr dazu in der ',
+    fav_consent_link:     'Datenschutzerklärung',
   },
   en: {
     radius:               'Radius: ',
@@ -1539,6 +1544,10 @@ const T = {
     deleted:              '✅ Server data deleted.',
     delete_error:         '❌ Error deleting data.',
     no_chatid_delete:     '⚠ No activation code stored',
+    onboard_privacy:      'Your location is used to show aircraft near you. To retrieve flight data it is sent to our server, but not stored there permanently. Details in the ',
+    onboard_privacy_link: 'Privacy Policy',
+    fav_consent:          'By tapping "Save & Activate", your location, activation code and favorites are sent to our server in order to deliver Telegram notifications. Learn more in the ',
+    fav_consent_link:     'Privacy Policy',
   }
 };
 
@@ -1573,6 +1582,10 @@ function applyI18n() {
     if (helpLink) helpLink.href = 'help_en.html';
     const legalLink = document.getElementById('legal-link');
     if (legalLink) legalLink.href = 'legal_en.html';
+    const onboardLegal = document.getElementById('onboard-legal-link');
+    if (onboardLegal) onboardLegal.href = 'legal_en.html';
+    const favConsent = document.getElementById('fav-consent-link');
+    if (favConsent) favConsent.href = 'legal_en.html';
   }
 }
 
