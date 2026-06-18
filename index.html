@@ -1190,18 +1190,19 @@ async function fetchData() {
   const radius = parseInt(document.getElementById('radius-input').value)||40;
 
   try {
-    // airplanes.live hat native CORS-Unterstuetzung. Fallback ueber EIGENEN Proxy,
-    // damit GPS-Koordinaten nicht an einen Drittanbieter gehen (Punkt 7)
-    const directUrl = `https://api.airplanes.live/v2/point/${myLat.toFixed(4)}/${myLon.toFixed(4)}/${radius}`;
+    // Standard: Abruf über EIGENEN Proxy, damit GPS-Koordinaten der Besucher NICHT
+    // direkt an einen Drittanbieter gehen. Direktaufruf nur als Fallback, falls der
+    // eigene Server kurz nicht erreichbar ist (airplanes.live hat native CORS-Unterstützung).
     const proxyUrl  = `${PUSH_SERVER}/aircraft?lat=${myLat.toFixed(4)}&lon=${myLon.toFixed(4)}&radius=${radius}`;
+    const directUrl = `https://api.airplanes.live/v2/point/${myLat.toFixed(4)}/${myLon.toFixed(4)}/${radius}`;
     let resp;
     try {
-      resp = await fetch(directUrl, { signal: AbortSignal.timeout(10000) });
-      if (!resp.ok) throw new Error('direct ' + resp.status);
-    } catch {
       resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+      if (!resp.ok) throw new Error('proxy ' + resp.status);
+    } catch {
+      resp = await fetch(directUrl, { signal: AbortSignal.timeout(10000) });
     }
-    if (!resp.ok) throw new Error(`HTTP ${resp.status} (proxy)`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     const alertNm = parseInt(document.getElementById('alert-input').value)||20;
     const prevHexes = new Set(knownHexes);
