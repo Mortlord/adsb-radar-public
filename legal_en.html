@@ -232,7 +232,7 @@
   <div class="section">
     <div class="section-label">01 — Legal Notice</div>
 
-    <h2>Information pursuant to § 5 TMG (German Telemedia Act)</h2>
+    <h2>Information pursuant to § 5 DDG (German Digital Services Act)</h2>
     <div class="data-block">
       M. Staaden<br>
       Kaiser-Joseph-Straße 254<br>
@@ -249,6 +249,8 @@
     <ul>
       <li><a href="https://airplanes.live" target="_blank">airplanes.live</a> – Live ADS-B flight data</li>
       <li><a href="https://www.adsbdb.com" target="_blank">adsbdb.com</a> – Aircraft and route data</li>
+      <li><a href="https://www.planespotters.net" target="_blank">planespotters.net</a> – Aircraft photos</li>
+      <li><a href="https://aerodatabox.com" target="_blank">AeroDataBox</a> – Supplementary route data (retrieved server-side)</li>
     </ul>
   </div>
 
@@ -272,27 +274,28 @@
     <p><strong style="color:var(--heading)">Location data, favorites and Telegram Chat ID (with Favorites feature)</strong></p>
     <p>Users who activate the optional Favorites feature with Telegram notifications expressly consent to the following data being transmitted to and stored on the operator's server:</p>
     <div class="tag-row">
-      <span class="tag">GPS-Standort</span>
-      <span class="tag">Telegram Chat-ID</span>
-      <span class="tag">Favoriten-Callsigns</span>
-      <span class="tag">Konfigurierter Radius</span>
+      <span class="tag">GPS location</span>
+      <span class="tag">Telegram Chat ID</span>
+      <span class="tag">Favorite callsigns</span>
+      <span class="tag">Configured radius</span>
     </div>
     <p>Legal basis: Consent pursuant to Art. 6(1)(a) GDPR, given by actively saving data in the app. Data is used solely for delivering Telegram notifications and is not shared with third parties.</p>
-    <p>The server is operated via <strong style="color:var(--heading)">Railway</strong> (Railway Corp., San Francisco, USA). Data transfer to the USA is based on standard contractual clauses pursuant to Art. 46(2)(c) GDPR. Weitere Informationen: <a href="https://railway.app/legal/privacy" target="_blank">railway.app/legal/privacy</a>.</p>
-    <p>Notifications are delivered via the <strong style="color:var(--heading)">Telegram Bot API</strong> (Telegram FZ LLC, Dubai, UAE). Weitere Informationen: <a href="https://telegram.org/privacy" target="_blank">telegram.org/privacy</a>.</p>
+    <p>The server is operated via <strong style="color:var(--heading)">Railway</strong> (Railway Corp., San Francisco, USA). Data transfer to the USA is based on standard contractual clauses pursuant to Art. 46(2)(c) GDPR. Further information: <a href="https://railway.app/legal/privacy" target="_blank">railway.app/legal/privacy</a>.</p>
+    <p>Notifications are delivered via the <strong style="color:var(--heading)">Telegram Bot API</strong> (Telegram FZ LLC, Dubai, UAE). Further information: <a href="https://telegram.org/privacy" target="_blank">telegram.org/privacy</a>.</p>
     <p>Stored data is automatically deleted after 30 days of inactivity. Immediate deletion is available at any time via the Favorites panel in the app.</p>
 
     <p><strong style="color:var(--heading)">Local browser storage (localStorage)</strong></p>
     <p>The app stores favorite callsigns and the Telegram Chat ID locally in the browser. This data is not automatically transmitted and can be deleted at any time via browser settings.</p>
 
     <p><strong style="color:var(--heading)">Requests to external services</strong></p>
-    <p>When loading flight data, requests are made to the following third-party services:</p>
+    <p>When loading flight data, the app calls the following third-party services directly from the browser. The user's IP address is technically transmitted to these services:</p>
     <div class="tag-row">
       <span class="tag">airplanes.live</span>
       <span class="tag">api.adsbdb.com</span>
-      <span class="tag">Timezone API</span>
+      <span class="tag">api.planespotters.net</span>
     </div>
-    <p>The user's IP address is technically transmitted to these services. The operator has no influence over their privacy practices.</p>
+    <p>Requests to <strong style="color:var(--heading)">airplanes.live</strong> additionally include the device's GPS coordinates as part of the request, in order to retrieve nearby aircraft. The operator has no influence over the privacy practices of these services.</p>
+    <p>Supplementary route data is retrieved via <strong style="color:var(--heading)">AeroDataBox</strong>. These requests are made exclusively server-side via the operator's server; the user's IP address is not transmitted to AeroDataBox.</p>
 
     <h2>What is not processed?</h2>
     <ul>
@@ -302,8 +305,9 @@
       <li>No sharing of data with third parties (except Telegram for notifications)</li>
     </ul>
 
-    <h2>Hosting</h2>
-    <p>This website is hosted via GitHub Pages (GitHub, Inc., San Francisco, USA). Server log data may be collected by GitHub when the page is accessed. Weitere Informationen: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank">Datenschutzerklärung von GitHub</a>.</p>
+    <h2>Hosting & Content Delivery</h2>
+    <p>This website is hosted via GitHub Pages (GitHub, Inc., San Francisco, USA). Server log data may be collected by GitHub when the page is accessed. Further information: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank">GitHub Privacy Statement</a>.</p>
+    <p>Page delivery runs through <strong style="color:var(--heading)">Cloudflare</strong> (Cloudflare, Inc., San Francisco, USA), which acts as a proxy for DNS, security and performance functions. In doing so, Cloudflare processes the user's IP address. Data transfer to the USA is based on standard contractual clauses pursuant to Art. 46(2)(c) GDPR. Further information: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">cloudflare.com/privacypolicy</a>.</p>
 
     <h2>User Rights</h2>
     <p>Users have the right to access, rectify and erase their stored data (Art. 15–17 GDPR). All stored data can be deleted directly via the Favorites panel in the app. For further questions: <a href="mailto:kontakt@adsb-radar.de">kontakt@adsb-radar.de</a>.</p>

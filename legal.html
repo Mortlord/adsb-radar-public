@@ -232,7 +232,7 @@
   <div class="section">
     <div class="section-label">01 — Impressum</div>
 
-    <h2>Angaben gemäß § 5 TMG</h2>
+    <h2>Angaben gemäß § 5 DDG</h2>
     <div class="data-block">
       M. Staaden<br>
       Kaiser-Joseph-Straße 254<br>
@@ -249,6 +249,8 @@
     <ul>
       <li><a href="https://airplanes.live" target="_blank">airplanes.live</a> – Live ADS-B Flugdaten</li>
       <li><a href="https://www.adsbdb.com" target="_blank">adsbdb.com</a> – Flugzeug- und Routendaten</li>
+      <li><a href="https://www.planespotters.net" target="_blank">planespotters.net</a> – Flugzeugfotos</li>
+      <li><a href="https://aerodatabox.com" target="_blank">AeroDataBox</a> – ergänzende Routendaten (serverseitig abgerufen)</li>
     </ul>
   </div>
 
@@ -286,13 +288,14 @@
     <p>Die App speichert Favoriten-Callsigns und die Telegram Chat-ID lokal im Browser. Diese Daten werden nicht automatisch übertragen und können jederzeit über die Browser-Einstellungen gelöscht werden.</p>
 
     <p><strong style="color:var(--heading)">Anfragen an externe Dienste</strong></p>
-    <p>Beim Laden von Flugdaten werden Anfragen an folgende Drittdienste gestellt:</p>
+    <p>Beim Laden von Flugdaten ruft die App folgende Drittdienste direkt aus dem Browser auf. Dabei wird technisch bedingt die IP-Adresse des Nutzers an diese Dienste übermittelt:</p>
     <div class="tag-row">
       <span class="tag">airplanes.live</span>
       <span class="tag">api.adsbdb.com</span>
-      <span class="tag">Timezone API</span>
+      <span class="tag">api.planespotters.net</span>
     </div>
-    <p>Dabei wird technisch bedingt die IP-Adresse des Nutzers an diese Dienste übermittelt. Auf deren Datenschutzpraktiken hat der Betreiber keinen Einfluss.</p>
+    <p>Bei Anfragen an <strong style="color:var(--heading)">airplanes.live</strong> werden zur Abfrage der umliegenden Flugzeuge zusätzlich die GPS-Koordinaten des Standorts als Teil der Anfrage übermittelt. Auf die Datenschutzpraktiken dieser Dienste hat der Betreiber keinen Einfluss.</p>
+    <p>Ergänzende Routendaten werden über <strong style="color:var(--heading)">AeroDataBox</strong> bezogen. Diese Anfragen erfolgen ausschließlich serverseitig über den Betreiber-Server; die IP-Adresse des Nutzers wird dabei nicht an AeroDataBox übermittelt.</p>
 
     <h2>Was wird nicht verarbeitet?</h2>
     <ul>
@@ -302,8 +305,9 @@
       <li>Keine Weitergabe von Daten an Dritte (außer Telegram für Benachrichtigungen)</li>
     </ul>
 
-    <h2>Hosting</h2>
+    <h2>Hosting & Content-Delivery</h2>
     <p>Diese Website wird über GitHub Pages (GitHub, Inc., San Francisco, USA) gehostet. Beim Aufruf der Seite können von GitHub Server-Logdaten erfasst werden. Weitere Informationen: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank">Datenschutzerklärung von GitHub</a>.</p>
+    <p>Der Abruf der Seite läuft über <strong style="color:var(--heading)">Cloudflare</strong> (Cloudflare, Inc., San Francisco, USA), das als Proxy für DNS, Sicherheits- und Performance-Funktionen vorgeschaltet ist. Cloudflare verarbeitet dabei technisch bedingt die IP-Adresse des Nutzers. Die Datenübertragung in die USA erfolgt auf Basis von Standardvertragsklauseln gemäß Art. 46 Abs. 2 lit. c DSGVO. Weitere Informationen: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">cloudflare.com/privacypolicy</a>.</p>
 
     <h2>Rechte der Nutzer</h2>
     <p>Nutzer haben das Recht auf Auskunft, Berichtigung und Löschung ihrer gespeicherten Daten (Art. 15–17 DSGVO). Eine Löschung aller gespeicherten Daten ist direkt über die Favoriten-Funktion in der App möglich. Bei weiteren Fragen steht <a href="mailto:kontakt@adsb-radar.de">kontakt@adsb-radar.de</a> zur Verfügung.</p>
