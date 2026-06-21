@@ -1597,6 +1597,27 @@ const PUSH_SERVER = 'https://web-production-a6fc8.up.railway.app';
 let favorites = JSON.parse(localStorage.getItem('fav_callsigns') || '[]');
 // Aktivierungscode (Token) statt Chat-ID; alte Werte werden verworfen (Punkt 1)
 let favToken = localStorage.getItem('fav_token') || '';
+// Server ist die Wahrheit: Favoriten werden vom Server geladen (geräteübergreifend).
+// Bis der erste Server-Load durch ist, darf updateServer() KEINE Favoriten pushen,
+// sonst überschreibt ein frisches Gerät die Server-Liste mit seiner lokalen.
+let favsLoaded = false;
+
+// Favoriten vom Server holen (Server = Wahrheit). Ersetzt die lokale Liste.
+// Nur mit gesetztem Token -> passt zum einwilligungsbasierten Ablauf.
+async function loadFavorites() {
+  if (!favToken) return;
+  try {
+    const r = await fetch(`${PUSH_SERVER}/favorites?token=${encodeURIComponent(favToken)}`, { signal: AbortSignal.timeout(6000) });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d.ok && Array.isArray(d.favorites)) {
+      favorites = d.favorites.map(String);
+      localStorage.setItem('fav_callsigns', JSON.stringify(favorites));
+      favsLoaded = true;
+      renderFavTags();
+    }
+  } catch { /* Netzfehler ignorieren, lokale Liste bleibt bestehen */ }
+}
 
 function toggleFavPanel() {
   const panel = document.getElementById('fav-panel');
@@ -1673,6 +1694,7 @@ async function saveFavs() {
     });
     const data = await resp.json();
     if (data.ok) {
+      favsLoaded = true;   // expliziter Save = Consent erteilt, Sync ab jetzt aktiv
       status.textContent = t.saved;
       status.style.color = '#3f9';
     } else {
@@ -1715,6 +1737,9 @@ async function deleteFavData() {
 
 async function updateServer() {
   if (!favToken || !myLat || !favorites.length) return;
+  // Erst pushen, wenn die Server-Wahrheit geladen ist – sonst überschreibt ein
+  // frisches Gerät die Server-Favoriten mit seiner lokalen Liste.
+  if (!favsLoaded) return;
   try {
     const radius   = parseInt(document.getElementById('radius-input').value) || 40;
     const alertRad = parseInt(document.getElementById('alert-input').value) || 20;
@@ -1820,6 +1845,7 @@ async function init() {
   window.addEventListener('resize', resizeCanvas);
   requestAnimationFrame(() => requestAnimationFrame(resizeCanvas));
   drawRadar();
+  loadFavorites();   // Server-Wahrheit beim Start laden (nur falls Token gesetzt)
   // Onboarding prüfen
   if (localStorage.getItem('onboarded')) {
     document.getElementById('onboard-modal').classList.add('hidden');
@@ -1829,6 +1855,10 @@ async function init() {
 
   setInterval(() => { if (myLat) fetchData(); }, REFRESH_MS);
   setInterval(refreshGpsQuiet, 5 * 60 * 1000);
+  // Favoriten periodisch vom Server nachladen (erst wenn Sync aktiv, d.h. nach
+  // explizitem Speichern – sonst würde ein noch nicht gespeicherter lokaler
+  // Favorit beim Reload überschrieben).
+  setInterval(() => { if (favsLoaded) loadFavorites(); }, 60000);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && myLat) { fetchData(); }
   });
