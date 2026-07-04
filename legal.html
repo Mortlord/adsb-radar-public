@@ -4,18 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Impressum & Datenschutz – ADS-B Radar</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
+    /* Selbstgehostete Fonts (kein Google-Request). Dateien in /fonts/ (SIL OFL). */
+    @font-face {
+      font-family: 'Barlow Semi Condensed';
+      font-style: normal; font-weight: 400; font-display: swap;
+      src: url('fonts/barlow-semi-condensed-400.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Barlow Semi Condensed';
+      font-style: normal; font-weight: 600; font-display: swap;
+      src: url('fonts/barlow-semi-condensed-600.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Barlow Semi Condensed';
+      font-style: normal; font-weight: 700; font-display: swap;
+      src: url('fonts/barlow-semi-condensed-700.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      font-style: normal; font-weight: 400; font-display: swap;
+      src: url('fonts/ibm-plex-mono-400.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      font-style: normal; font-weight: 600; font-display: swap;
+      src: url('fonts/ibm-plex-mono-600.woff2') format('woff2');
+    }
     :root {
-      --bg: #0a0e1a;
-      --surface: #111827;
-      --border: #1e2d40;
-      --accent: #00d4ff;
-      --accent-dim: rgba(0, 212, 255, 0.12);
-      --text: #c9d6e3;
-      --text-dim: #5a7a9a;
-      --heading: #e8f4ff;
+      --bg: #12161c;
+      --surface: #1a1f27;
+      --surface-2: #151a21;
+      --border: #2a323d;
+      --border-dim: #212831;
+      --accent: #4a9fd4;
+      --accent-dim: rgba(74, 159, 212, 0.12);
+      --text: #c3ccd6;
+      --text-dim: #6b7682;
+      --heading: #e6ecf2;
+      --warn: #d98a3d;
+      --good: #6a9c78;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,8 +51,8 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      font-weight: 300;
+      font-family: 'Barlow Semi Condensed', system-ui, sans-serif;
+      font-weight: 400;
       line-height: 1.7;
       min-height: 100vh;
     }
@@ -35,8 +63,8 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(74,159,212,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74,159,212,0.025) 1px, transparent 1px);
       background-size: 40px 40px;
       pointer-events: none;
       z-index: 0;
@@ -53,7 +81,7 @@
     }
 
     .logo {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 1.1rem;
       color: var(--accent);
       text-decoration: none;
@@ -69,7 +97,7 @@
     }
 
     header nav a {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.8rem;
       color: var(--text-dim);
       text-decoration: none;
@@ -88,7 +116,7 @@
     }
 
     .page-title {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.75rem;
       color: var(--accent);
       letter-spacing: 0.2em;
@@ -107,7 +135,7 @@
     .section {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 4px;
       padding: 2rem;
       margin-bottom: 1.5rem;
       position: relative;
@@ -124,7 +152,7 @@
     }
 
     .section-label {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.7rem;
       color: var(--accent);
       letter-spacing: 0.2em;
@@ -152,11 +180,11 @@
     p:last-child { margin-bottom: 0; }
 
     .data-block {
-      background: rgba(0,212,255,0.04);
-      border: 1px solid rgba(0,212,255,0.15);
+      background: rgba(74,159,212,0.05);
+      border: 1px solid rgba(74,159,212,0.20);
       border-radius: 6px;
       padding: 1rem 1.2rem;
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.85rem;
       color: var(--text);
       line-height: 1.8;
@@ -171,9 +199,9 @@
     .tag {
       display: inline-block;
       background: var(--accent-dim);
-      border: 1px solid rgba(0,212,255,0.2);
+      border: 1px solid rgba(74,159,212,0.28);
       color: var(--accent);
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.72rem;
       padding: 0.2rem 0.6rem;
       border-radius: 3px;
@@ -210,7 +238,7 @@
     .footer-note {
       margin-top: 3rem;
       text-align: center;
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.72rem;
       color: var(--text-dim);
       letter-spacing: 0.1em;
@@ -299,7 +327,6 @@
     </div>
     <p>Auf die Datenschutzpraktiken dieser Dienste hat der Betreiber keinen Einfluss.</p>
     <p>Die Live-Flugdaten von <strong style="color:var(--heading)">airplanes.live</strong> sowie ergänzende Routendaten von <strong style="color:var(--heading)">AeroDataBox</strong> werden ausschließlich serverseitig über den Betreiber-Server abgerufen. Die IP-Adresse und die Standortkoordinaten des Nutzers werden dabei nicht an diese Dienste übermittelt, sondern nur an den Betreiber-Server, der die Anfragen stellvertretend stellt. Der Betreiber-Server verarbeitet die IP-Adresse nur vorübergehend zur Bearbeitung der Anfrage und zur Begrenzung der Anfragerate; er speichert sie nicht dauerhaft (siehe auch Reichweiten-Messung). Plattformseitige Server-Logs können beim Hosting-Anbieter anfallen (siehe Hosting).</p>
-    <p>Rechtsgrundlage für diese technisch bedingten Verarbeitungen (Auslieferung der Seite, Abruf der Flugdaten) ist das berechtigte Interesse am technischen Betrieb und an der Bereitstellung der App gemäß Art. 6 Abs. 1 lit. f DSGVO.</p>
     <p>Rechtsgrundlage für diese technisch bedingten Verarbeitungen (Auslieferung der Seite, Abruf der Flugdaten) ist das berechtigte Interesse am technischen Betrieb und an der Bereitstellung der App gemäß Art. 6 Abs. 1 lit. f DSGVO.</p>
 
     <h2>Was wird nicht verarbeitet?</h2>

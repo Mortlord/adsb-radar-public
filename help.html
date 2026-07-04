@@ -4,18 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hilfe – ADS-B Radar</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
+    /* Selbstgehostete Fonts (kein Google-Request). Dateien in /fonts/ (SIL OFL). */
+    @font-face {
+      font-family: 'Barlow Semi Condensed';
+      font-style: normal; font-weight: 400; font-display: swap;
+      src: url('fonts/barlow-semi-condensed-400.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Barlow Semi Condensed';
+      font-style: normal; font-weight: 600; font-display: swap;
+      src: url('fonts/barlow-semi-condensed-600.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Barlow Semi Condensed';
+      font-style: normal; font-weight: 700; font-display: swap;
+      src: url('fonts/barlow-semi-condensed-700.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      font-style: normal; font-weight: 400; font-display: swap;
+      src: url('fonts/ibm-plex-mono-400.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      font-style: normal; font-weight: 600; font-display: swap;
+      src: url('fonts/ibm-plex-mono-600.woff2') format('woff2');
+    }
     :root {
-      --bg: #0a0e1a;
-      --surface: #111827;
-      --border: #1e2d40;
-      --accent: #00d4ff;
-      --accent-dim: rgba(0, 212, 255, 0.12);
-      --text: #c9d6e3;
-      --text-dim: #5a7a9a;
-      --heading: #e8f4ff;
+      --bg: #12161c;
+      --surface: #1a1f27;
+      --surface-2: #151a21;
+      --border: #2a323d;
+      --border-dim: #212831;
+      --accent: #4a9fd4;
+      --accent-dim: rgba(74, 159, 212, 0.12);
+      --text: #c3ccd6;
+      --text-dim: #6b7682;
+      --heading: #e6ecf2;
+      --warn: #d98a3d;
+      --good: #6a9c78;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,8 +51,8 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      font-weight: 300;
+      font-family: 'Barlow Semi Condensed', system-ui, sans-serif;
+      font-weight: 400;
       line-height: 1.7;
       min-height: 100vh;
     }
@@ -34,8 +62,8 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(74,159,212,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74,159,212,0.025) 1px, transparent 1px);
       background-size: 40px 40px;
       pointer-events: none;
       z-index: 0;
@@ -52,7 +80,7 @@
     }
 
     .logo {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 1.1rem;
       color: var(--accent);
       text-decoration: none;
@@ -64,7 +92,7 @@
     header nav { margin-left: auto; }
 
     header nav a {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.8rem;
       color: var(--text-dim);
       text-decoration: none;
@@ -83,7 +111,7 @@
     }
 
     .page-title {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.75rem;
       color: var(--accent);
       letter-spacing: 0.2em;
@@ -102,7 +130,7 @@
     .section {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 4px;
       padding: 2rem;
       margin-bottom: 1.5rem;
       position: relative;
@@ -119,7 +147,7 @@
     }
 
     .section-label {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.7rem;
       color: var(--accent);
       letter-spacing: 0.2em;
@@ -164,11 +192,11 @@
     .step-list li:last-child { border-bottom: none; }
 
     .step-num {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.72rem;
       color: var(--accent);
       background: var(--accent-dim);
-      border: 1px solid rgba(0,212,255,0.2);
+      border: 1px solid rgba(74,159,212,0.28);
       border-radius: 3px;
       padding: 2px 7px;
       flex-shrink: 0;
@@ -176,11 +204,11 @@
     }
 
     .example-box {
-      background: rgba(0,212,255,0.04);
-      border: 1px solid rgba(0,212,255,0.15);
+      background: rgba(74,159,212,0.05);
+      border: 1px solid rgba(74,159,212,0.20);
       border-radius: 6px;
       padding: 1rem 1.2rem;
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.85rem;
       color: var(--text);
       line-height: 1.8;
@@ -197,9 +225,9 @@
     .tag {
       display: inline-block;
       background: var(--accent-dim);
-      border: 1px solid rgba(0,212,255,0.2);
+      border: 1px solid rgba(74,159,212,0.28);
       color: var(--accent);
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.72rem;
       padding: 0.2rem 0.6rem;
       border-radius: 3px;
@@ -208,13 +236,13 @@
     }
 
     .tag-green {
-      background: rgba(0,255,136,0.08);
-      border-color: rgba(0,255,136,0.2);
-      color: #3f9;
+      background: rgba(106,156,120,0.10);
+      border-color: rgba(106,156,120,0.30);
+      color: var(--good);
     }
 
     .info-box {
-      background: rgba(0,212,255,0.06);
+      background: rgba(74,159,212,0.07);
       border-left: 3px solid var(--accent);
       border-radius: 0 6px 6px 0;
       padding: 0.8rem 1rem;
@@ -223,13 +251,13 @@
     }
 
     .warn-box {
-      background: rgba(255,136,0,0.06);
-      border-left: 3px solid #f80;
+      background: rgba(217,138,61,0.07);
+      border-left: 3px solid var(--warn);
       border-radius: 0 6px 6px 0;
       padding: 0.8rem 1rem;
       margin: 1rem 0;
       font-size: 0.9rem;
-      color: #c9a070;
+      color: var(--warn);
     }
 
     a { color: var(--accent); text-decoration: none; }
@@ -237,24 +265,25 @@
 
     .cta-btn {
       display: inline-block;
-      background: #0d2a1a;
-      border: 1px solid #2a6a3a;
-      color: #3f9;
-      font-family: 'Share Tech Mono', monospace;
+      background: var(--surface-2);
+      border: 1px solid var(--accent-dim);
+      color: var(--accent);
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.82rem;
       padding: 0.6rem 1.2rem;
-      border-radius: 4px;
+      border-radius: 3px;
       text-decoration: none;
       margin-top: 0.5rem;
       letter-spacing: 0.05em;
+      transition: border-color 0.15s, color 0.15s;
     }
 
-    .cta-btn:hover { background: #0f3a22; text-decoration: none; }
+    .cta-btn:hover { border-color: var(--accent); color: var(--heading); text-decoration: none; }
 
     .footer-note {
       margin-top: 3rem;
       text-align: center;
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.72rem;
       color: var(--text-dim);
       letter-spacing: 0.1em;
@@ -324,7 +353,7 @@
       </li>
       <li>
         <span class="step-num">04</span>
-        <span>Öffne in der App das ⭐ FAVORITEN Panel und trage den Aktivierungscode in das entsprechende Feld ein.</span>
+        <span>Öffne in der App das <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.12em;display:inline-block;"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z"/></svg> FAVORITEN Panel und trage den Aktivierungscode in das entsprechende Feld ein.</span>
       </li>
       <li>
         <span class="step-num">05</span>
@@ -336,7 +365,7 @@
       Behandle den Aktivierungscode wie ein Passwort und teile ihn nicht. Er verbindet die App sicher mit deinem Telegram-Chat.
     </div>
 
-    <a href="https://t.me/adsb_radar_bot" target="_blank" class="cta-btn">✈ @adsb_radar_bot öffnen</a>
+    <a href="https://t.me/adsb_radar_bot" target="_blank" class="cta-btn" style="display:inline-flex;align-items:center;gap:0.5em;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.12em;display:inline-block;"><path d="M21 15.5v-2l-8-4.5V3.5a1.5 1.5 0 0 0-3 0V9L2 13.5v2l8-2.2v4.2l-2.2 1.6v1.4L11.5 19l3.7.5v-1.4L13 16.5v-4.2Z"/></svg><span>@adsb_radar_bot öffnen</span></a>
   </div>
 
   <!-- WANN BEKOMME ICH NACHRICHTEN -->
@@ -359,7 +388,7 @@
     <p>Der Server prüft alle 5 Minuten automatisch ob ein Favorit in deiner Zone ist. Die App muss dafür nicht geöffnet sein — es reicht, sie einmal mit eingetragenem Aktivierungscode geöffnet zu haben.</p>
 
     <div class="warn-box">
-      ⚠ Wenn du deinen Standort wechselst (z.B. auf Reisen), öffne die App kurz und tippe erneut auf Speichern &amp; Aktivieren, damit der Server deinen neuen Standort kennt.
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.12em;display:inline-block;"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v5M12 17.5v.5"/></svg> Wenn du deinen Standort wechselst (z.B. auf Reisen), öffne die App kurz und tippe erneut auf Speichern &amp; Aktivieren, damit der Server deinen neuen Standort kennt.
     </div>
   </div>
 
@@ -374,7 +403,7 @@
 
     <div class="example-box">
       <span class="label">Beispiel-Bericht</span>
-      ⭐ Favoriten heute – 2 unique Callsigns<br>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.12em;display:inline-block;"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z"/></svg> Favoriten heute – 2 unique Callsigns<br>
       &nbsp;&nbsp;THY2AY – 10.0 nm SO (13:40)<br>
       &nbsp;&nbsp;SWR123 – 8.5 nm N (17:22)
     </div>
@@ -392,10 +421,10 @@
   <div class="section">
     <div class="section-label">05 — Daten löschen</div>
 
-    <p>Du kannst deine gespeicherten Daten jederzeit löschen. Öffne dazu das ⭐ FAVORITEN Panel in der App und tippe auf:</p>
+    <p>Du kannst deine gespeicherten Daten jederzeit löschen. Öffne dazu das <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.12em;display:inline-block;"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z"/></svg> FAVORITEN Panel in der App und tippe auf:</p>
 
     <div class="example-box">
-      🗑 Meine Daten löschen (DSGVO)
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.12em;display:inline-block;"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></svg> Meine Daten löschen (DSGVO)
     </div>
 
     <p>Damit werden Standort, Aktivierungscode, Favoriten und Benachrichtigungshistorie vom Server entfernt. Lokale Daten im Browser kannst du über die Browser-Einstellungen löschen.</p>
