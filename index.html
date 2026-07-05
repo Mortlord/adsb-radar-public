@@ -1748,7 +1748,7 @@ let favsLoaded = false;
 async function loadFavorites() {
   if (!favToken) return;
   try {
-    const r = await fetch(`${PUSH_SERVER}/favorites?token=${encodeURIComponent(favToken)}`, { signal: AbortSignal.timeout(6000) });
+    const r = await fetch(`${PUSH_SERVER}/favorites`, { headers: { 'X-Auth-Token': favToken }, signal: AbortSignal.timeout(6000) });
     if (!r.ok) return;
     const d = await r.json();
     if (d.ok && Array.isArray(d.favorites)) {
