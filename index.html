@@ -6,7 +6,7 @@
 <!-- Content-Security-Policy als zusaetzliche XSS-Verteidigung.
      Hinweis: frame-ancestors/X-Frame-Options wirken nur als HTTP-Header,
      daher idealerweise zusaetzlich auf dem Static-Host setzen. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.airplanes.live https://api.adsbdb.com https://api.planespotters.net https://web-production-a6fc8.up.railway.app; font-src 'self'; object-src 'none'; base-uri 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.airplanes.live https://api.adsbdb.com https://api.planespotters.net https://api.adsb-radar.de; font-src 'self'; object-src 'none'; base-uri 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'">
 <title>ADS-B Radar – Live Flight Tracker</title>
 <meta name="description" content="Free live ADS-B flight radar. Track aircraft near you in real time – no account needed. Favorites & Telegram notifications included.">
 <meta name="theme-color" content="#0a0e1a">
@@ -1214,7 +1214,7 @@ async function fetchRoute(callsign) {
   if (routeRetry[cs] && now < routeRetry[cs]) return null;
   routeRetry[cs] = now + 10000; // Schutz gegen parallele Doppel-Anfragen (>= Timeout)
   try {
-    const r = await fetch(`https://web-production-a6fc8.up.railway.app/route?callsign=${encodeURIComponent(cs)}`,
+    const r = await fetch(`https://api.adsb-radar.de/route?callsign=${encodeURIComponent(cs)}`,
                           {signal: AbortSignal.timeout(8000)});
     if (!r.ok) { routeRetry[cs] = now + 60000; return null; } // transient: in 60s erneut
     const d = await r.json();
@@ -1733,7 +1733,7 @@ function applyI18n() {
 // ══════════════════════════════════════════════
 // FAVORITEN
 // ══════════════════════════════════════════════
-const PUSH_SERVER = 'https://web-production-a6fc8.up.railway.app';
+const PUSH_SERVER = 'https://api.adsb-radar.de';
 
 let favorites = JSON.parse(localStorage.getItem('fav_callsigns') || '[]');
 // Aktivierungscode (Token) statt Chat-ID; alte Werte werden verworfen (Punkt 1)
@@ -1976,7 +1976,7 @@ async function init() {
 
   // Airlines von Railway laden (single source of truth)
   try {
-    const r = await fetch('https://web-production-a6fc8.up.railway.app/airlines');
+    const r = await fetch('https://api.adsb-radar.de/airlines');
     if (r.ok) AIRLINES = await r.json();
   } catch(e) { console.warn('Airlines konnten nicht geladen werden:', e); }
 
