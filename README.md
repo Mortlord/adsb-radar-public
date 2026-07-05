@@ -1,4 +1,4 @@
-# ✈ ADS-B Radar
+# ✈ ADS-B Radar (old)
 
 A browser-based ADS-B flight radar for planespotters — no account, no app install, no ads.
 
